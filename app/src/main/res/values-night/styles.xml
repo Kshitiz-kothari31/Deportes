@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CustomSearchViewStyle" parent="Widget.AppCompat.SearchView">
+        <item name="queryBackground">@color/dark_theme_search_bar</item>
+        <item name="background">@color/dark_theme_search_bar</item>
+    </style>
+
+    <style name="TextAppearance">
+        <item name="android:textColor">@color/TextColor</item>
+    </style>
+</resources>

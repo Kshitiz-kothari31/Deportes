@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark theme colors -->
+    <color name="TextColor">#FFFFFF</color>
+    <color name="mainColor">#0E3D76</color>
+    <color name="mainColor2">#608BC1</color>
+    <color name="filledBox">#202021</color>
+    <color name="search">#1C1C1C</color>
+</resources>

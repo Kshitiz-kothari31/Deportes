@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/home"
+        android:title="Home"
+        android:icon="@drawable/round_home_24"
+        app:showAsAction="ifRoom"
+        />
+
+    <item
+        android:id="@+id/shorts"
+        android:title="Shorts"
+        android:icon="@drawable/round_whatshot_24"
+        app:showAsAction="ifRoom"
+        />
+
+</menu>

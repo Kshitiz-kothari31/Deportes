@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="BottomNavTextAppearance" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="CustomSearchViewStyle" parent="Widget.AppCompat.SearchView">
+        <item name="queryBackground">@color/light_theme_search_bar</item>
+        <item name="background">@color/light_theme_search_bar</item>
+    </style>
+
+    <style name="TextAppearance">
+        <item name="android:textColor">@color/TextColor</item>
+    </style>
+</resources>
