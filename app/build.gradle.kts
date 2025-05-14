@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.deportes"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.deportes"
@@ -40,6 +40,8 @@ android {
 
 dependencies {
 
+    implementation ("androidx.media3:media3-exoplayer:1.6.1")
+    implementation ("androidx.media3:media3-ui:1.6.1")
     implementation("com.cloudinary:cloudinary-android:3.0.2")
     implementation(libs.appcompat)
     implementation(libs.material)

@@ -13,10 +13,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <VideoView
-            android:id="@+id/videoview"
+        <androidx.media3.ui.PlayerView
+            android:id="@+id/playerView"
             android:layout_width="match_parent"
-            android:layout_height="250dp" />
+            android:layout_height="250dp"
+            app:show_buffering="when_playing"
+            app:use_controller="true" />
 
 
     </RelativeLayout>
