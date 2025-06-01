@@ -162,7 +162,6 @@ public class Sports extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_sports, container, false);
-
     }
 
     private boolean isNetworkAvailable() {
