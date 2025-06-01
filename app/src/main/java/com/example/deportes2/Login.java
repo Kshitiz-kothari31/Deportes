@@ -135,9 +135,16 @@ public class Login extends AppCompatActivity {
                         JSONObject userObject = jsonObject.getJSONObject("user"); // ✅ Fix here
                         String userId = userObject.getString("id");
 
+                        String refreshToken = jsonObject.getString("refresh_token");
+
                         SharedPreferences.Editor editor = getSharedPreferences("AuthPrefs", MODE_PRIVATE).edit();
                         editor.putString("access_token", accessToken);
+                        editor.putString("refresh_token", refreshToken);
                         editor.putString("user_id", userId);
+                        long expiresIn = jsonObject.getLong("expires_in"); // seconds until expiry
+                        long expiresAt = (System.currentTimeMillis() / 1000) + expiresIn; // current unix timestamp + expiresIn
+
+                        editor.putLong("expires_at", expiresAt);
                         editor.apply();
 
                         runOnUiThread(() -> {

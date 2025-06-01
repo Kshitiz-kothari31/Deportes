@@ -1,15 +1,22 @@
 package com.example.deportes2;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
 import androidx.annotation.Nullable;
 
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import okhttp3.*;
 
@@ -103,8 +110,8 @@ public class SupabaseManager {
         return byteBuffer.toByteArray();
     }
 
-    public static String getPublicUrl(String fileName) {
-        return SUPABASE_URL + "/storage/v1/object/public/posts-images/" + fileName;
+    public static String getPublicUrl(String bucketName, String fileName) {
+        return SUPABASE_URL + "/storage/v1/object/public/" + bucketName + "/" + fileName;
     }
 
     public interface ImageUploadCallback {
@@ -129,4 +136,77 @@ public class SupabaseManager {
         client.newCall(request).enqueue(callback);
     }
 
+    public static void refreshAccessToken(Context context, RefreshTokenCallback callback) {
+        SharedPreferences prefs = context.getSharedPreferences("AuthPrefs", Context.MODE_PRIVATE);
+        String refreshToken = prefs.getString("refresh_token", null);
+
+        if (refreshToken == null) {
+            callback.onFailure();
+            return;
+        }
+
+        new Thread(() -> {
+            try {
+                URL url = new URL(SUPABASE_URL + "/auth/v1/token?grant_type=refresh_token");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+
+                String body = "{\"refresh_token\":\"" + refreshToken + "\"}";
+                conn.getOutputStream().write(body.getBytes());
+
+                int responseCode = conn.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = in.readLine()) != null) {
+                        response.append(line);
+                    }
+                    in.close();
+
+                    JSONObject json = new JSONObject(response.toString());
+                    String newAccessToken = json.getString("access_token");
+                    String newRefreshToken = json.getString("refresh_token");
+                    long expiresIn = json.getLong("expires_in");
+
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("access_token", newAccessToken);
+                    editor.putString("refresh_token", newRefreshToken);
+                    editor.putLong("expires_at", (System.currentTimeMillis() / 1000) + expiresIn);
+                    editor.apply();
+
+                    callback.onSuccess();
+                } else {
+                    callback.onFailure();
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                callback.onFailure();
+            }
+        }).start();
+    }
+
+    public interface RefreshTokenCallback {
+        void onSuccess();
+        void onFailure();
+    }
+
+    public static void listVideosInFolder(String bucketName, String folderPath, Callback callback) {
+        HttpUrl url = HttpUrl.parse(SUPABASE_URL + "/storage/v1/object/list/" + bucketName)
+                .newBuilder()
+                .addQueryParameter("prefix", folderPath)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + API_KEY)
+                .get()
+                .build();
+
+        client.newCall(request).enqueue(callback);
+    }
 }

@@ -8,20 +8,18 @@
     android:layout_height="match_parent"
     tools:context=".VideoPlayer">
 
-    <RelativeLayout
-        android:id="@+id/relativeLayout"
+    <FrameLayout
+        android:id="@+id/videoviewFrame"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <androidx.media3.ui.PlayerView
-            android:id="@+id/playerView"
+        <VideoView
+            android:id="@+id/videoView"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
+            android:layout_height="wrap_content"
             app:show_buffering="when_playing"
             app:use_controller="true"/>
-
-
-    </RelativeLayout>
+    </FrameLayout>
 
     <TextView
         android:id="@+id/description"
@@ -33,7 +31,7 @@
         android:textColor="?attr/TextColor"
         android:layout_marginTop="30dp"
         android:layout_marginLeft="35dp"
-        android:layout_below="@+id/relativeLayout"/>
+        android:layout_below="@+id/videoviewFrame"/>
 
     <ScrollView
         android:layout_width="match_parent"

@@ -1,5 +1,7 @@
 package com.example.deportes2;
 
+import static com.example.deportes2.SupabaseManager.refreshAccessToken;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -17,11 +19,21 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.cloudinary.Cloudinary;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
 public class MainActivity extends AppCompatActivity {
 
     public Fragment basketballVideosFragment = new fragment_Basketball_videos();
@@ -54,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, Login.class);
             startActivity(intent);
             finish();
+        }else{
+            checkAndRefreshToken();
         }
 
         ImageView homeIcon = findViewById(R.id.bottom_home_icon);
@@ -153,24 +167,32 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-}
+    private void checkAndRefreshToken() {
+        SharedPreferences prefs = getSharedPreferences("AuthPrefs", MODE_PRIVATE);
+        long expiresAt = prefs.getLong("expires_at", 0);
+        long currentTime = System.currentTimeMillis() / 1000;
 
-class CloudinaryManager {
-    private static Cloudinary cloudinary;
+        if (currentTime >= expiresAt) {
+            Log.d("Auth", "Access token expired. Refreshing...");
+            SupabaseManager.refreshAccessToken(this, new SupabaseManager.RefreshTokenCallback() {
+                @Override
+                public void onSuccess() {
+                    Log.d("Auth", "Token refreshed successfully.");
+                }
 
-    public static void initCloudinary() {
-        Map<String, String> config = new HashMap<>();
-        config.put("cloud_name", "doxwvdotv");
-        config.put("api_key", "773683899351999");
-        config.put("api_secret", "yhSAqhL7TdqP5koICIVN7goLj1Q");
-        cloudinary = new Cloudinary(config);
-        System.out.println("Cloudinary initialized successfully!");
-    }
-
-    public static Cloudinary getCloudinary() {
-        if(cloudinary == null){
-            throw new IllegalStateException("Cloudinary is not initialized. Call initCloudinary() first.");
+                @Override
+                public void onFailure() {
+                    Log.e("Auth", "Failed to refresh token. Redirecting to login.");
+                    runOnUiThread(() -> {
+                        Intent intent = new Intent(MainActivity.this, Login.class);
+                        startActivity(intent);
+                        finish();
+                    });
+                }
+            });
+        } else {
+            Log.d("Auth", "Access token still valid.");
         }
-        return cloudinary;
     }
+
 }

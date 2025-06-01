@@ -125,7 +125,7 @@ public class signUp extends AppCompatActivity {
         Request request = new Request.Builder()
                 .url(supabaseProjectUrl + "/auth/v1/signup")
                 .post(body)
-                .addHeader("apiKey", supabaseApiKey)
+                .addHeader("apikey", supabaseApiKey)
                 .addHeader("Content-Type", "application/json")
                 .build();
 
@@ -142,19 +142,10 @@ public class signUp extends AppCompatActivity {
                     String responseData = response.body().string();
                     try {
                         JSONObject jsonObject = new JSONObject(responseData);
-                        String accessToken = jsonObject.getString("access_token");
-                        String userId = jsonObject.getJSONObject("user").getString("id");
-
-//                        SharedPreferences prefs = getSharedPreferences("AuthPrefs", MODE_PRIVATE);
-//                        prefs.edit().putString("access_token", accessToken).apply();
-
-                        SharedPreferences.Editor editor = getSharedPreferences("AuthPrefs", MODE_PRIVATE).edit();
-                        editor.putString("access_token", accessToken);
-                        editor.putString("user_id", userId);
-                        editor.apply();
 
                         runOnUiThread(() -> {
-                            Intent intent = new Intent(signUp.this, MainActivity.class);
+                            Toast.makeText(signUp.this, "Signup successful. Please login.", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(signUp.this, Login.class);
                             startActivity(intent);
                             finish();
                         });

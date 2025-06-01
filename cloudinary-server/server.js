@@ -1,41 +1,60 @@
 require('dotenv').config();
-
-console.log("Cloud Name:", process.env.CLOUDINARY_CLOUD_NAME);
-console.log("API Key:", process.env.CLOUDINARY_API_KEY);
-console.log("API Secret:", process.env.CLOUDINARY_API_SECRET);
 const express = require('express');
-const cloudinary = require('cloudinary').v2;
+const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
-    console.error("Missing Cloudinary credentials in .env file");
-    process.exit(1); // Stop the server if credentials are missing
-}
+// Supabase config
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
-});
-
+// GET /getVideos?sport=Football
 app.get('/getVideos', async (req, res) => {
+  const folder = req.query.sport; // e.g. "Football"
+
+  if (!folder) {
+    return res.status(400).json({ error: "Missing 'sport' parameter" });
+  }
+
   try {
-    const result = await cloudinary.search
-      .expression("resource_type:video AND folder=football")
-      .max_results(10)
-      .execute();
-      console.log("Fetched Videos:", result.resources);
+    // List files inside the folder in 'videos' bucket
+    const { data: files, error } = await supabase
+      .storage
+      .from(process.env.SUPABASE_BUCKET)     // hardcoded bucket name (or use process.env.SUPABASE_BUCKET if set)
+      .list(folder, { limit: 100 });
 
-      res.json({ videos: result.resources.map(video => video.secure_url) });
+    if (error) {
+      console.error("List error:", error.message);
+      return res.status(500).json({ error: error.message });
+    }
 
-  } catch (error) {
-    console.error("Error fetching videos:", error);
-    res.status(500).json({ error: "Failed to fetch videos" });
+    if (!files || files.length === 0) {
+      return res.status(404).json({ error: "No videos found in folder" });
+    }
+
+    // Map files to public URLs
+    const videoUrls = files.map(file => {
+      const { data } = supabase
+        .storage
+        .from(process.env.SUPABASE_BUCKET)
+        .getPublicUrl(`${folder}/${file.name}`);
+
+      console.log("Public URL:", data.publicUrl);
+      return data.publicUrl;
+    });
+
+    return res.json({ videos: videoUrls });
+
+  } catch (err) {
+    console.error("Server error:", err);
+    return res.status(500).json({ error: "Failed to fetch videos" });
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on http://0.0.0.0:${PORT}`);
 });

@@ -26,15 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class fragment_Basketball_videos extends Fragment {
-//
-//    private String[] videoUrls = {
-//            "https://res.cloudinary.com/doxwvdotv/video/upload/v1733223171/basketball/sf7erfqgsrwyvwch30cx.mp4", //passing
-//            "https://res.cloudinary.com/doxwvdotv/video/upload/v1733222864/basketball/n7ivozf5i22ykllk0kdl.mp4", //shooting
-//            "https://res.cloudinary.com/doxwvdotv/video/upload/v1733223283/basketball/yifpuwkcwmav9o2efrps.mp4", //dribbling
-//            "https://res.cloudinary.com/doxwvdotv/video/upload/v1733223391/basketball/jiv2knpzlhfduswpmedn.mp4", //footwork
-//            "https://res.cloudinary.com/doxwvdotv/video/upload/v1733223540/basketball/faszljb5nejbrpzutdbn.mp4", //running
-//            "https://res.cloudinary.com/doxwvdotv/video/upload/v1733223726/basketball/utbwlqqtkgdohsuvm0uv.mp4" //jumping
-//    };
 
     private String[] videoTexts = {
             "Learning how to pass effectively in basketball involves understanding the different types of passes, practicing the correct technique, and knowing when to use each pass during a game. Here’s a step-by-step guide:\n\n" +
@@ -276,45 +267,6 @@ public class fragment_Basketball_videos extends Fragment {
                     "With practice and consistent effort, you'll see improvements in your jumping ability and overall basketball performance.\n\n"
     };
 
-    private List<String> videoPublicIds = new ArrayList<>();
-
-    private void fetchVideos(Runnable onSuccess) {
-        RequestQueue queue = Volley.newRequestQueue(requireContext());
-        String url = "http://192.168.125.181:3000/getVideos"; // Replace with your actual backend URL
-
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
-                response -> {
-                    try {
-                        JSONArray videoArray = response.getJSONArray("videos");
-                        videoPublicIds.clear();
-
-                        for (int i = 0; i < videoArray.length(); i++) {
-                            videoPublicIds.add(videoArray.getString(i)); // Store video URLs
-                        }
-
-                        Log.d("Debug", "Fetched Video IDs: " + videoPublicIds);
-                        if(onSuccess != null){
-                            onSuccess.run();
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        Log.e("Volley", "Error parsing JSON");
-                    }
-                },
-                error -> Log.e("Volley", "Error fetching videos: " + error.getMessage()));
-
-        queue.add(request);
-    }
-
-    private String extractPublicId(String url) {
-        String[] parts = url.split("/upload/");
-        if (parts.length > 1) {
-            return parts[1].split("\\.")[0]; // Removes .mp4 or other extensions
-        } else {
-            Log.e("Debug", "Invalid Cloudinary URL format!");
-            return null;
-        }
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -332,24 +284,19 @@ public class fragment_Basketball_videos extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        CloudinaryManager.initCloudinary();
-        fetchVideos(() ->{
-            Log.d("Debug", "Videos fetched, updating Ui");
-        });
-
         ImageButton b_passing, b_shooting, b_dribbling, b_footwork, b_running, b_jumping;
 
         b_passing = view.findViewById(R.id.basketball_passing);
         b_passing.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (videoPublicIds == null || videoPublicIds.isEmpty()) {
+                List<String> videos = Sports.videoPublicIds;
+                if (videos == null || videos.isEmpty()) {
                     Toast.makeText(requireContext(), "No videos available yet! Try again in a second.", Toast.LENGTH_SHORT).show();
                     Log.e("Debug", "videoPublicIds is NULL or EMPTY when clicking the button!");
                     return;
                 }
-                String publicId = videoPublicIds.get(0);
-                playVideo(publicId);
+                playVideoWithName("passing.mp4", videos);
             }
         });
 
@@ -357,10 +304,13 @@ public class fragment_Basketball_videos extends Fragment {
         b_shooting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Debug", "Passing button clicked!");
-                if(!videoPublicIds.isEmpty()){
-                    playVideo(videoPublicIds.get(1));
+                List<String> videos = Sports.videoPublicIds;
+                if (videos == null || videos.isEmpty()) {
+                    Toast.makeText(requireContext(), "No videos available yet! Try again in a second.", Toast.LENGTH_SHORT).show();
+                    Log.e("Debug", "videoPublicIds is NULL or EMPTY when clicking the button!");
+                    return;
                 }
+                playVideoWithName("shooting.mp4", videos);
             }
         });
 
@@ -368,10 +318,13 @@ public class fragment_Basketball_videos extends Fragment {
         b_dribbling.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Debug", "Passing button clicked!");
-                if(!videoPublicIds.isEmpty()){
-                    playVideo(videoPublicIds.get(2));
+                List<String> videos = Sports.videoPublicIds;
+                if (videos == null || videos.isEmpty()) {
+                    Toast.makeText(requireContext(), "No videos available yet! Try again in a second.", Toast.LENGTH_SHORT).show();
+                    Log.e("Debug", "videoPublicIds is NULL or EMPTY when clicking the button!");
+                    return;
                 }
+                playVideoWithName("dribbling.mp4", videos);
             }
         });
 
@@ -379,10 +332,13 @@ public class fragment_Basketball_videos extends Fragment {
         b_footwork.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Debug", "Passing button clicked!");
-                if(!videoPublicIds.isEmpty()){
-                    playVideo(videoPublicIds.get(3));
+                List<String> videos = Sports.videoPublicIds;
+                if (videos == null || videos.isEmpty()) {
+                    Toast.makeText(requireContext(), "No videos available yet! Try again in a second.", Toast.LENGTH_SHORT).show();
+                    Log.e("Debug", "videoPublicIds is NULL or EMPTY when clicking the button!");
+                    return;
                 }
+                playVideoWithName("footwork.mp4", videos);
             }
         });
 
@@ -390,10 +346,13 @@ public class fragment_Basketball_videos extends Fragment {
         b_running.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Debug", "Passing button clicked!");
-                if(!videoPublicIds.isEmpty()){
-                    playVideo(videoPublicIds.get(4));
+                List<String> videos = Sports.videoPublicIds;
+                if (videos == null || videos.isEmpty()) {
+                    Toast.makeText(requireContext(), "No videos available yet! Try again in a second.", Toast.LENGTH_SHORT).show();
+                    Log.e("Debug", "videoPublicIds is NULL or EMPTY when clicking the button!");
+                    return;
                 }
+                playVideoWithName("running.mp4", videos);
             }
         });
 
@@ -401,12 +360,29 @@ public class fragment_Basketball_videos extends Fragment {
         b_jumping.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Debug", "Passing button clicked!");
-                if(!videoPublicIds.isEmpty()){
-                    playVideo(videoPublicIds.get(5));
+                List<String> videos = Sports.videoPublicIds;
+                if (videos == null || videos.isEmpty()) {
+                    Toast.makeText(requireContext(), "No videos available yet! Try again in a second.", Toast.LENGTH_SHORT).show();
+                    Log.e("Debug", "videoPublicIds is NULL or EMPTY when clicking the button!");
+                    return;
                 }
+                playVideoWithName("jumping.mp4", videos);
             }
         });
+    }
+
+    private void playVideoWithName(String videoName, List<String> videoUrls){
+        for(String url : videoUrls){
+            if(url.contains(videoName)){
+                Intent intent = new Intent(requireContext(), VideoPlayer.class);
+                intent.putExtra("actionName", url);
+                startActivity(intent);
+                return;
+            }
+        }
+
+        Toast.makeText(requireContext(), "Video not found: " + videoName, Toast.LENGTH_SHORT).show();
+
     }
 
     private void playVideo(String actionName){

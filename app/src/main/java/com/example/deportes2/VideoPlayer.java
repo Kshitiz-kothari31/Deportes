@@ -1,11 +1,13 @@
 package com.example.deportes2;
 
+import android.annotation.SuppressLint;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.MediaController;
 import android.widget.TextView;
-import com.cloudinary.Transformation;
-import com.cloudinary.android.MediaManager;
-import com.cloudinary.android.cldvideoplayer.CldVideoPlayer;
+import android.widget.VideoView;
+
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -17,6 +19,9 @@ import java.util.ArrayList;
 
 public class VideoPlayer extends AppCompatActivity {
 
+    private VideoView videoView;
+
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,54 +33,55 @@ public class VideoPlayer extends AppCompatActivity {
             return insets;
         });
 
-        if (MediaManager.get() == null) {
-            MediaManager.init(this);
-        }
-
-        TextView textView = findViewById(R.id.descriptionText);
-        String videoText = getIntent().getStringExtra("videoText");
+        videoView = findViewById(R.id.videoView);
+//        TextView textView = findViewById(R.id.descriptionText);
+//        String videoText = getIntent().getStringExtra("videoText");
         String videoUrl = getIntent().getStringExtra("actionName");
 
+//        if( videoText != null ){
+//            textView.setText(videoText);
+//        }
 
-        if( videoText != null ){
-            textView.setText(videoText);
-        }
+        if (videoUrl != null && !videoUrl.isEmpty()) {
+            Uri videoUri = Uri.parse(videoUrl);
 
-        if( videoUrl != null ){
-            setVideoPlayer(videoUrl);
-        }else{
-            Log.d("Debug", "Received VideoPublicId: " + videoUrl);
+            // Set MediaController for play/pause/seek controls
+            MediaController mediaController = new MediaController(this);
+            mediaController.setAnchorView(videoView);
+            videoView.setMediaController(mediaController);
+            videoView.setVideoURI(videoUri);
+            videoView.requestFocus();
+
+            videoView.setOnPreparedListener(mp -> videoView.start());
+        } else {
+            // Handle error: No video URL passed
+            finish(); // or show a message
         }
     }
 
-    private CldVideoPlayer player;
-
-    private void setVideoPlayer(String publicId){
-        player = new CldVideoPlayer(this,
-                MediaManager.get().url()
-                        .resourceType("video")
-                        .transformation(new Transformation().quality("auto"))
-                        .generate(publicId));
-
-
-        PlayerView playerView = findViewById(R.id.playerView);
-        playerView.setPlayer(player.getPlayer());
-
-        player.getPlayer().play();
+    private void playVideo(String url){
+        videoView.setVideoURI(Uri.parse(url));
+        videoView.setOnPreparedListener(mp -> mp.start());
+        videoView.setOnCompletionListener(mp -> Log.d("VideoPlayer", "Playback completed"));
+        videoView.setOnErrorListener((mp, what, extra) -> {
+            Log.e("VideoPlayer", "Error playing video: what=" + what + ", extra=" + extra);
+            return true; // error handled
+        });
     }
 
-    protected void onPause(){
+    @Override
+    protected void onPause() {
         super.onPause();
-        if(player != null) {
-            player.getPlayer().pause();
+        if (videoView != null && videoView.isPlaying()) {
+            videoView.pause();
         }
     }
 
-    protected void onDestroy(){
+    @Override
+    protected void onDestroy() {
         super.onDestroy();
-        if(player != null) {
-            player.getPlayer().release();
-            player = null;
+        if (videoView != null) {
+            videoView.suspend();
         }
     }
 }
