@@ -55,7 +55,6 @@ public class Sports extends Fragment {
 
         ShapeableImageView football, basketball, tabletenis, volleyball, swimming, batminton;
 
-
         football = getView().findViewById(R.id.footballimage);
         basketball = getView().findViewById(R.id.basketballimage);
         tabletenis = getView().findViewById(R.id.tabletenisimage);
@@ -191,4 +190,3 @@ public class Sports extends Fragment {
         builder.show();
     }
 }
-
