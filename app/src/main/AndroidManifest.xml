@@ -21,6 +21,10 @@
         android:usesCleartextTraffic="true"
         tools:ignore="MissingClass"
         tools:targetApi="31">
+
+        <activity android:name=".SearchActivity"
+            android:exported="true"
+            />
         <activity
             android:name=".WritePost"
             android:exported="false"
