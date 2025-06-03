@@ -5,13 +5,13 @@
     android:layout_height="match_parent"
     android:id="@+id/basketballVideosFragment"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragment_Basketball_videos">
+    tools:context=".batminton_videos">
 
     <RelativeLayout
         android:id="@+id/relativelayout"
         android:layout_width="wrap_content"
         android:layout_height="140dp"
-        android:background="#EB5C09"
+        android:background="@color/purple"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -97,7 +97,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageButton
-                    android:id="@+id/basketball_passing"
+                    android:id="@+id/batminton_grip"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:backgroundTint="#70E709"
@@ -109,7 +109,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="130dp"
                     android:layout_marginTop="20dp"
-                    android:text="Passing"
+                    android:text="Grip"
                     android:textColor="?attr/TextColor"
                     android:textStyle="bold" />
 
@@ -129,7 +129,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/cardview01">
 
                 <ImageButton
-                    android:id="@+id/basketball_shooting"
+                    android:id="@+id/batminton_hong_eye"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:backgroundTint="#E74809"
@@ -141,7 +141,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="130dp"
                     android:layout_marginTop="20dp"
-                    android:text="Shooting"
+                    android:text="Hong Eye Coordinate"
                     android:textColor="?attr/TextColor"
                     android:textStyle="bold" />
 
@@ -161,7 +161,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/cardview02">
 
                 <ImageButton
-                    android:id="@+id/basketball_dribbling"
+                    android:id="@+id/batminton_smash"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:backgroundTint="#09E792"
@@ -173,7 +173,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="130dp"
                     android:layout_marginTop="20dp"
-                    android:text="Dribbling"
+                    android:text="Smash"
                     android:textColor="?attr/TextColor"
                     android:textStyle="bold" />
 
@@ -193,7 +193,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/cardview03">
 
                 <ImageButton
-                    android:id="@+id/basketball_footwork"
+                    android:id="@+id/batminton_trust_and_letting_go"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:backgroundTint="#673AB7"
@@ -205,7 +205,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="130dp"
                     android:layout_marginTop="20dp"
-                    android:text="Footwork"
+                    android:text="Trust and Latting GO"
                     android:textColor="?attr/TextColor"
                     android:textStyle="bold" />
 
@@ -225,7 +225,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/cardview04">
 
                 <ImageButton
-                    android:id="@+id/basketball_running"
+                    android:id="@+id/batminton_goal_setting"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:backgroundTint="#E71809"
@@ -237,7 +237,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="130dp"
                     android:layout_marginTop="20dp"
-                    android:text="Running"
+                    android:text="Goal Setting"
                     android:textColor="?attr/TextColor"
                     android:textStyle="bold" />
 
@@ -259,7 +259,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/cardview05">
 
                 <ImageButton
-                    android:id="@+id/basketball_jumping"
+                    android:id="@+id/batminton_shuttlecock"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:backgroundTint="#E7E309"
@@ -271,7 +271,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="130dp"
                     android:layout_marginTop="20dp"
-                    android:text="Jumping"
+                    android:text="Shuttlecock"
                     android:textColor="?attr/TextColor"
                     android:textStyle="bold" />
 

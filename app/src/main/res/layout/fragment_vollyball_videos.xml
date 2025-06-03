@@ -5,13 +5,13 @@
     android:layout_height="match_parent"
     android:id="@+id/basketballVideosFragment"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragment_Basketball_videos">
+    tools:context=".vollyball_videos">
 
     <RelativeLayout
         android:id="@+id/relativelayout"
         android:layout_width="wrap_content"
         android:layout_height="140dp"
-        android:background="#EB5C09"
+        android:background="@color/min"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -21,15 +21,15 @@
 
         <ImageView
             android:id="@+id/imageView2"
-            android:layout_width="162dp"
-            android:layout_height="108dp"
+            android:layout_width="91dp"
+            android:layout_height="103dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="25dp"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/basketball_background" />
+            android:layout_marginBottom="17dp"
+            android:background="@drawable/vollybal" />
 
         <TextView
             android:id="@+id/lessons"
@@ -97,7 +97,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageButton
-                    android:id="@+id/basketball_passing"
+                    android:id="@+id/vollyball_roation"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:backgroundTint="#70E709"
@@ -109,7 +109,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="130dp"
                     android:layout_marginTop="20dp"
-                    android:text="Passing"
+                    android:text="Rotation"
                     android:textColor="?attr/TextColor"
                     android:textStyle="bold" />
 
@@ -129,7 +129,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/cardview01">
 
                 <ImageButton
-                    android:id="@+id/basketball_shooting"
+                    android:id="@+id/vollyball_decision_making"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:backgroundTint="#E74809"
@@ -141,7 +141,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="130dp"
                     android:layout_marginTop="20dp"
-                    android:text="Shooting"
+                    android:text="Decision Making"
                     android:textColor="?attr/TextColor"
                     android:textStyle="bold" />
 
@@ -161,7 +161,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/cardview02">
 
                 <ImageButton
-                    android:id="@+id/basketball_dribbling"
+                    android:id="@+id/vollyball_serving"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:backgroundTint="#09E792"
@@ -173,7 +173,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="130dp"
                     android:layout_marginTop="20dp"
-                    android:text="Dribbling"
+                    android:text="Serving"
                     android:textColor="?attr/TextColor"
                     android:textStyle="bold" />
 
@@ -193,7 +193,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/cardview03">
 
                 <ImageButton
-                    android:id="@+id/basketball_footwork"
+                    android:id="@+id/vollyball_system_scoring"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:backgroundTint="#673AB7"
@@ -205,7 +205,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="130dp"
                     android:layout_marginTop="20dp"
-                    android:text="Footwork"
+                    android:text="Scoring System"
                     android:textColor="?attr/TextColor"
                     android:textStyle="bold" />
 
@@ -225,7 +225,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/cardview04">
 
                 <ImageButton
-                    android:id="@+id/basketball_running"
+                    android:id="@+id/vollyball_touch_rules"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:backgroundTint="#E71809"
@@ -237,7 +237,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="130dp"
                     android:layout_marginTop="20dp"
-                    android:text="Running"
+                    android:text="Touch Rules"
                     android:textColor="?attr/TextColor"
                     android:textStyle="bold" />
 
@@ -259,7 +259,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/cardview05">
 
                 <ImageButton
-                    android:id="@+id/basketball_jumping"
+                    android:id="@+id/vollyball_substitutions"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:backgroundTint="#E7E309"
@@ -271,7 +271,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="130dp"
                     android:layout_marginTop="20dp"
-                    android:text="Jumping"
+                    android:text="Substitutions"
                     android:textColor="?attr/TextColor"
                     android:textStyle="bold" />
 

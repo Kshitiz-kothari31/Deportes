@@ -2,6 +2,13 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="purple">#DC8BE0</color>
+    <color name="Mint">#EBD3F8</color>
+    <color name="cream">#CDC1FF</color>
+    <color name="min">#DD88CF</color>
+
+
+
 
     <color name="TextColor">#FF000000</color>
 
