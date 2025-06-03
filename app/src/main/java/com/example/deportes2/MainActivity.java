@@ -11,7 +11,6 @@ import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -19,20 +18,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-import com.cloudinary.Cloudinary;
+import com.google.ai.client.generativeai.type.Tool;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,8 +32,6 @@ public class MainActivity extends AppCompatActivity {
     Fragment sportsFragment = new Sports();
     Fragment activeFragment;
     ExtendedFloatingActionButton aiBtn, addpost;
-    Toolbar topToolbar;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
         ImageView sportsIcon = findViewById(R.id.bottom_sports_icon);
         ImageView profileIcon = findViewById(R.id.bottom_profile_icon);
 //        ImageView chatIcon = findViewById(R.id.bottom_chat_icon);
-        topToolbar = findViewById(R.id.top_toolbar);
 
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.main_content, sportsFragment, "Sports")
@@ -104,11 +88,9 @@ public class MainActivity extends AppCompatActivity {
 
         homeIcon.setOnClickListener(v -> {
             switchFragments(homeFragment);
-            topToolbar.setVisibility(View.VISIBLE);
         });
         sportsIcon.setOnClickListener(v -> {
             switchFragments(sportsFragment);
-            topToolbar.setVisibility(View.VISIBLE);
         });
 
         profileIcon.setOnClickListener(v -> {

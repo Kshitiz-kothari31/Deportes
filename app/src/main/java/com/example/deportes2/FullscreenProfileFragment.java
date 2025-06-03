@@ -11,8 +11,10 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -31,21 +33,15 @@ import org.json.JSONObject;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 public class FullscreenProfileFragment extends Fragment {
 
     private ImageView bgImg;
     private ShapeableImageView profileImg;
-    private AppCompatButton editBtn;
+    private AppCompatButton editBtn, changebgBtn, changeProfileBtn;
     private TextView nameTextView, userNameTextView, bioTextView;
     private EditText nameEditText, userNameEdit,  bioEditText;
 
@@ -60,6 +56,8 @@ public class FullscreenProfileFragment extends Fragment {
     private Uri selectedProfileUri = null;
     private Uri selectedBackgroundUri = null;
 
+    Toolbar toptoolbar;
+
     public FullscreenProfileFragment(){}
 
     @Nullable
@@ -73,7 +71,9 @@ public class FullscreenProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         bgImg = view.findViewById(R.id.bg_img);
+        changebgBtn = view.findViewById(R.id.changebgImageBtn);
         profileImg = view.findViewById(R.id.profile_img);
+        changeProfileBtn = view.findViewById(R.id.changeprofileImageBtn);
 
         editBtn = view.findViewById(R.id.edit_btn);
 
@@ -133,7 +133,6 @@ public class FullscreenProfileFragment extends Fragment {
 
                                     nameTextView.setText(name);
                                     userNameTextView.setText(username);
-                                    bioEditText.setVisibility(View.GONE);
                                     bioTextView.setText(bio);
 
                                     Log.d("ProfileImgURL", profileImageUrl);
@@ -171,19 +170,19 @@ public class FullscreenProfileFragment extends Fragment {
                     userNameEdit.setVisibility(View.VISIBLE);
                     bioEditText.setVisibility(View.VISIBLE);
 
+                    changebgBtn.setVisibility(View.VISIBLE);
+                    changeProfileBtn.setVisibility(View.VISIBLE);
+
                     nameTextView.setVisibility(View.GONE);
                     userNameTextView.setVisibility(View.GONE);
                     bioTextView.setVisibility(View.GONE);
 
-                    bgImg.setClickable(true);
-                    profileImg.setClickable(true);
-
-                    profileImg.setOnClickListener(img -> {
+                    changeProfileBtn.setOnClickListener(img -> {
                         editingProfileImage = true;
                         imagePickerLauncher.launch("image/*");
                     });
 
-                    bgImg.setOnClickListener(img -> {
+                    changebgBtn.setOnClickListener(img -> {
                         editingProfileImage = false;
                         imagePickerLauncher.launch("image/*");
                     });
@@ -204,12 +203,12 @@ public class FullscreenProfileFragment extends Fragment {
                     userNameEdit.setVisibility(View.GONE);
                     bioEditText.setVisibility(View.GONE);
 
+                    changebgBtn.setVisibility(View.GONE);
+                    changeProfileBtn.setVisibility(View.GONE);
+
                     nameTextView.setVisibility(View.VISIBLE);
                     userNameTextView.setVisibility(View.VISIBLE);
                     bioTextView.setVisibility(View.VISIBLE);
-
-                    profileImg.setClickable(false);
-                    bgImg.setClickable(false);
 
                     if (selectedProfileUri != null && selectedBackgroundUri != null) {
                         SupabaseManager.uploadImageToBucket(requireContext(), "profile_images/" + userId + ".jpg", selectedProfileUri, accessToken, new SupabaseManager.ImageUploadCallback() {
@@ -275,6 +274,27 @@ public class FullscreenProfileFragment extends Fragment {
                 }
             }
         });
+    }
+
+    private void addPostToLayout(String name, String time, String message, String imageUrl, String profile_url){
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View postView = inflater.inflate(R.layout.post, null);
+
+        TextView USER_NAME = postView.findViewById(R.id.name);
+        TextView TIME = postView.findViewById(R.id.time);
+        TextView POST_MESSAGE = postView.findViewById(R.id.postMessage);
+        ShapeableImageView POST_IMG = postView.findViewById(R.id.postimg);
+        ShapeableImageView USER_IMAGE = postView.findViewById(R.id.userImg);
+
+        USER_NAME.setText(name);
+        TIME.setText(time);
+        POST_MESSAGE.setText(message);
+        Glide.with(this).load(profile_url).into(USER_IMAGE);
+        Glide.with(this).load(imageUrl).into(POST_IMG);
+
+        LinearLayout postsContainer = requireView().findViewById(R.id.postsContainer);
+        postsContainer.addView(postView);
+
     }
 
 }
