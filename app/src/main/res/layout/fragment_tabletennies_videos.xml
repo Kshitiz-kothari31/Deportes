@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/basketballVideosFragment"
+    android:id="@+id/tabletenisVideosFragment"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".tabletennies_videos">
 
@@ -22,15 +22,15 @@
 
         <ImageView
             android:id="@+id/imageView2"
-            android:layout_width="162dp"
-            android:layout_height="108dp"
+            android:layout_width="105dp"
+            android:layout_height="103dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="25dp"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/basketball_background" />
+            android:layout_marginBottom="17dp"
+            android:background="@drawable/tabletenis" />
 
         <TextView
             android:id="@+id/lessons"
@@ -162,7 +162,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/cardview02">
 
                 <ImageButton
-                    android:id="@+id/basketball_serve"
+                    android:id="@+id/tabletenis_serve"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:backgroundTint="#09E792"

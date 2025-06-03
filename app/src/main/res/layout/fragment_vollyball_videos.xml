@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/basketballVideosFragment"
+    android:id="@+id/volleyballVideosFragment"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".vollyball_videos">
 
@@ -97,7 +97,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageButton
-                    android:id="@+id/vollyball_roation"
+                    android:id="@+id/vollyball_rotation"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:backgroundTint="#70E709"
