@@ -1,7 +1,5 @@
 package com.example.deportes2;
 
-import static com.example.deportes2.SupabaseManager.refreshAccessToken;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -18,8 +16,17 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.google.ai.client.generativeai.type.Tool;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
     Fragment sportsFragment = new Sports();
     Fragment activeFragment;
     ExtendedFloatingActionButton aiBtn, addpost;
+
+    public static List<String> videoPublicIds = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,6 +156,33 @@ public class MainActivity extends AppCompatActivity {
         }else{
             super.onBackPressed();
         }
+    }
+
+    public void fetchVideosFromBackend(String sportName) {
+        RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
+        String url = "https://supabase-server-la9g.onrender.com/getVideos?sport=" + sportName; // Replace with your actual backend URL
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                response -> {
+                    try {
+                        JSONArray videoArray = response.getJSONArray("videos");
+                        videoPublicIds.clear();
+
+                        for (int i = 0; i < videoArray.length(); i++) {
+                            String videourl = videoArray.getString(i);
+                            videoPublicIds.add(videourl); // Store full URLs
+                        }
+
+                        Log.d("Debug", "Fetched Video IDs: " + videoPublicIds);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Log.e("Volley", "Error parsing JSON");
+                    }
+                },
+                error -> Log.e("Volley", "Error fetching videos: " + error.getMessage()));
+
+        queue.add(request);
     }
 
     private void checkAndRefreshToken() {

@@ -3,34 +3,18 @@ package com.example.deportes2;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentTransaction;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.material.imageview.ShapeableImageView;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Sports extends Fragment {
     public Sports(){
@@ -46,8 +30,6 @@ public class Sports extends Fragment {
         }
 
     }
-
-    public static List<String> videoPublicIds = new ArrayList<>();
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -66,9 +48,9 @@ public class Sports extends Fragment {
             @Override
             public void onClick(View view) {
                 if (getActivity() instanceof MainActivity) {
-                    ((MainActivity) getActivity()).switchFragments(
-                            ((MainActivity) getActivity()).footballVideosFragment);
-                    fetchVideosFromBackend("Football");
+                    MainActivity activity = (MainActivity) getActivity();
+                    activity.fetchVideosFromBackend("Football");  // ✅ Call via activity
+                    activity.switchFragments(activity.footballVideosFragment);
                 }
             }
         });
@@ -77,9 +59,9 @@ public class Sports extends Fragment {
             @Override
             public void onClick(View view) {
                 if (getActivity() instanceof MainActivity) {
-                    ((MainActivity) getActivity()).switchFragments(
-                            ((MainActivity) getActivity()).basketballVideosFragment);
-                    fetchVideosFromBackend("Basketball");
+                    MainActivity activity = (MainActivity) getActivity();
+                    activity.fetchVideosFromBackend("Basketball");
+                    activity.switchFragments(activity.basketballVideosFragment);
                 }
             }
         });
@@ -127,33 +109,6 @@ public class Sports extends Fragment {
 //                }
 //            }
 //        });
-    }
-
-    private void fetchVideosFromBackend(String sportName) {
-        RequestQueue queue = Volley.newRequestQueue(requireContext());
-        String url = "http://192.168.156.181:3000/getVideos?sport=" + sportName; // Replace with your actual backend URL
-
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
-                response -> {
-                    try {
-                        JSONArray videoArray = response.getJSONArray("videos");
-                        videoPublicIds.clear();
-
-                        for (int i = 0; i < videoArray.length(); i++) {
-                            String videourl = videoArray.getString(i);
-                            videoPublicIds.add(videourl); // Store full URLs
-                        }
-
-                        Log.d("Debug", "Fetched Video IDs: " + videoPublicIds);
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        Log.e("Volley", "Error parsing JSON");
-                    }
-                },
-                error -> Log.e("Volley", "Error fetching videos: " + error.getMessage()));
-
-        queue.add(request);
     }
 
     @Nullable
