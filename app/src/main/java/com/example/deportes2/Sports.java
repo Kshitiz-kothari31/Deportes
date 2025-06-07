@@ -3,33 +3,20 @@ package com.example.deportes2;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentTransaction;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.material.imageview.ShapeableImageView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class Sports extends Fragment {
@@ -47,7 +34,8 @@ public class Sports extends Fragment {
 
     }
 
-    public static List<String> videoPublicIds = new ArrayList<>();
+    private View loadingLayout;
+    private ConstraintLayout sportsFragment;
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -68,13 +56,23 @@ public class Sports extends Fragment {
         swimming = getView().findViewById(R.id.swimmingimage);
         batminton = getView().findViewById(R.id.batmintonimage);
 
+        loadingLayout = view.findViewById(R.id.loadingLayout);
+        sportsFragment = view.findViewById(R.id.sports_Constraintlayout);
+
         football.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (getActivity() instanceof MainActivity) {
-                    ((MainActivity) getActivity()).switchFragments(
-                            ((MainActivity) getActivity()).footballVideosFragment);
-                    fetchVideosFromBackend("Football");
+                if(getActivity() instanceof MainActivity) {
+                    MainActivity activity = (MainActivity) getActivity();
+                    loadingLayout.setVisibility(View.VISIBLE); // Show loading
+
+                    activity.fetchVideosFromBackend("Football", new OnVideosLoadedListener() {
+                        @Override
+                        public void onVideosLoaded(List<String> videoIds) {
+                            loadingLayout.setVisibility(View.GONE); // Hide loading
+                            activity.switchFragments(activity.footballVideosFragment); // Switch now
+                        }
+                    });
                 }
             }
         });
@@ -82,84 +80,130 @@ public class Sports extends Fragment {
         basketball.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (getActivity() instanceof MainActivity) {
-                    ((MainActivity) getActivity()).switchFragments(
-                            ((MainActivity) getActivity()).basketballVideosFragment);
-                    fetchVideosFromBackend("Basketball");
+                if(getActivity() instanceof MainActivity) {
+                    MainActivity activity = (MainActivity) getActivity();
+                    loadingLayout.setVisibility(View.VISIBLE); // Show loading
+
+                    activity.fetchVideosFromBackend("Basketball", new OnVideosLoadedListener() {
+                        @Override
+                        public void onVideosLoaded(List<String> videoIds) {
+                            loadingLayout.setVisibility(View.GONE); // Hide loading
+                            activity.switchFragments(activity.basketballVideosFragment); // Switch now
+                        }
+                    });
                 }
             }
         });
 
-//        tabletenis.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (getActivity() instanceof MainActivity) {
-//                    ((MainActivity) getActivity()).switchFragments(
-//                            ((MainActivity) getActivity()).tabletenisVideosFragment);
-//                    fetchVideosFromBackend("TableTenis");
-//                }
-//            }
-//        });
-//
-//        volleyball.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (getActivity() instanceof MainActivity) {
-//                    ((MainActivity) getActivity()).switchFragments(
-//                            ((MainActivity) getActivity()).volleyballVideosFragment);
-//                    fetchVideosFromBackend("Volleyball");
-//                }
-//            }
-//        });
-//
-//        swimming.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (getActivity() instanceof MainActivity) {
-//                    ((MainActivity) getActivity()).switchFragments(
-//                            ((MainActivity) getActivity()).swimmingVideosFragment);
-//                    fetchVideosFromBackend("Swimming");
-//                }
-//            }
-//        });
-//
-//        batminton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (getActivity() instanceof MainActivity) {
-//                    ((MainActivity) getActivity()).switchFragments(
-//                            ((MainActivity) getActivity()).batmintonVideosFragment);
-//                    fetchVideosFromBackend("Batminton");
-//                }
-//            }
-//        });
+         tabletenis.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(getActivity() instanceof MainActivity) {
+                    MainActivity activity = (MainActivity) getActivity();
+                    loadingLayout.setVisibility(View.VISIBLE); // Show loading
+
+                    activity.fetchVideosFromBackend("Tabletenis", new OnVideosLoadedListener() {
+                        @Override
+                        public void onVideosLoaded(List<String> videoIds) {
+                            loadingLayout.setVisibility(View.GONE); // Hide loading
+                            activity.switchFragments(activity.tabletenisVideosFragment); // Switch now
+                        }
+                    });
+                }
+            }
+        });
+
+        volleyball.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(getActivity() instanceof MainActivity) {
+                    MainActivity activity = (MainActivity) getActivity();
+                    loadingLayout.setVisibility(View.VISIBLE); // Show loading
+
+                    activity.fetchVideosFromBackend("Volleyball", new OnVideosLoadedListener() {
+                        @Override
+                        public void onVideosLoaded(List<String> videoIds) {
+                            loadingLayout.setVisibility(View.GONE); // Hide loading
+                            activity.switchFragments(activity.volleyballVideosFragment); // Switch now
+                        }
+                    });
+                }
+            }
+        });
+
+        swimming.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(getActivity() instanceof MainActivity) {
+                    MainActivity activity = (MainActivity) getActivity();
+                    loadingLayout.setVisibility(View.VISIBLE); // Show loading
+
+                    activity.fetchVideosFromBackend("Swimming", new OnVideosLoadedListener() {
+                        @Override
+                        public void onVideosLoaded(List<String> videoIds) {
+                            loadingLayout.setVisibility(View.GONE); // Hide loading
+                            activity.switchFragments(activity.swimmingVideosFragment); // Switch now
+                        }
+                    });
+                }
+            }
+        });
+
+        batminton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(getActivity() instanceof MainActivity) {
+                    MainActivity activity = (MainActivity) getActivity();
+                    loadingLayout.setVisibility(View.VISIBLE); // Show loading
+
+                    activity.fetchVideosFromBackend("Batminton", new OnVideosLoadedListener() {
+                        @Override
+                        public void onVideosLoaded(List<String> videoIds) {
+                            loadingLayout.setVisibility(View.GONE); // Hide loading
+                            activity.switchFragments(activity.batmintonVideosFragment); // Switch now
+                        }
+                    });
+                }
+            }
+        });
     }
 
-    private void fetchVideosFromBackend(String sportName) {
-        RequestQueue queue = Volley.newRequestQueue(requireContext());
-        String url = "http://192.168.156.181:3000/getVideos?sport=" + sportName; // Replace with your actual backend URL
+    private void loadVideos(String sportName) {
+        if (getActivity() instanceof MainActivity) {
+            MainActivity activity = (MainActivity) getActivity();
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
-                response -> {
-                    try {
-                        JSONArray videoArray = response.getJSONArray("videos");
-                        videoPublicIds.clear();
+            loadingLayout.setVisibility(View.VISIBLE);
+            sportsFragment.setVisibility(View.GONE);
 
-                        for (int i = 0; i < videoArray.length(); i++) {
-                            String videourl = videoArray.getString(i);
-                            videoPublicIds.add(videourl); // Store full URLs
-                        }
+            activity.fetchVideosFromBackend(sportName, new Sports.OnVideosLoadedListener() {
+                @Override
+                public void onVideosLoaded(List<String> videoUrls) {
+                    loadingLayout.setVisibility(View.GONE);
 
-                        Log.d("Debug", "Fetched Video IDs: " + videoPublicIds);
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        Log.e("Volley", "Error parsing JSON");
+                    switch (sportName) {
+                        case "Football":
+                            activity.switchFragments(activity.footballVideosFragment);
+                            break;
+                        case "Basketball":
+                            activity.switchFragments(activity.basketballVideosFragment);
+                            break;
+                        case "Tabletenis":
+                            activity.switchFragments(activity.tabletenisVideosFragment);
+                            break;
+                        case "Volleyball":
+                            activity.switchFragments(activity.volleyballVideosFragment);
+                            break;
+                        case "Swimming":
+                            activity.switchFragments(activity.swimmingVideosFragment);
+                            break;
+                        case "Batminton":
+                            activity.switchFragments(activity.batmintonVideosFragment);
+                            break;
+                        // Add other cases as needed
                     }
-                },
-                error -> Log.e("Volley", "Error fetching videos: " + error.getMessage()));
-
-        queue.add(request);
+                }
+            });
+        }
     }
 
     @Nullable
@@ -193,5 +237,9 @@ public class Sports extends Fragment {
             }
         });
         builder.show();
+    }
+
+    public interface OnVideosLoadedListener {
+        void onVideosLoaded(List<String> videoPublicIds);
     }
 }

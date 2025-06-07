@@ -1,6 +1,7 @@
 package com.example.deportes2;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,10 +13,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
+import androidx.appcompat.widget.Toolbar;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
-public class football_videos extends Fragment {
+public class tabletennies_videos extends Fragment {
+
 
 //    private String[] videoTexts = {
 //            "Learning to pass a football accurately and effectively requires mastering technique, practicing regularly, and understanding the game. Here are the steps to improve your football passing skills: \n\n" +
@@ -304,17 +319,6 @@ public class football_videos extends Fragment {
 //    };
 
 
-//    private String extractPublicId(String url) {
-//        String[] parts = url.split("/upload/");
-//        if (parts.length > 1) {
-//            return parts[1].split("\\.")[0]; // Removes .mp4 or other extensions
-//        } else {
-//            Log.e("Debug", "Invalid Cloudinary URL format!");
-//            return null;
-//        }
-//    }
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -323,7 +327,7 @@ public class football_videos extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_football_videos, container, false);
+        View view = inflater.inflate(R.layout.fragment_tabletennies_videos, container, false);
         return view;
     }
 
@@ -331,10 +335,10 @@ public class football_videos extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        ImageButton f_passing, f_dribbling, f_shooting,  f_controlling, f_header, f_chest_control;
+        ImageButton t_footwork, t_coordination, t_serve,  t_chop, t_grip, t_stroke;
 
-        f_passing = view.findViewById(R.id.football_passing);
-        f_passing.setOnClickListener(new View.OnClickListener() {
+        t_footwork = view.findViewById(R.id.tabletenis_footwork);
+        t_footwork.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 List<String> videos = MainActivity.videoPublicIds;
@@ -343,12 +347,12 @@ public class football_videos extends Fragment {
                     Log.e("Debug", "videoPublicIds is NULL or EMPTY when clicking the button!");
                     return;
                 }
-                playVideoWithName("passing.mp4", videos);
+                playVideoWithName("", videos);
             }
         });
 
-        f_dribbling = getView().findViewById(R.id.football_Dribbling);
-        f_dribbling.setOnClickListener(new View.OnClickListener() {
+        t_coordination = getView().findViewById(R.id.tabletenis_coordination);
+        t_coordination.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 List<String> videos = MainActivity.videoPublicIds;
@@ -357,12 +361,12 @@ public class football_videos extends Fragment {
                     Log.e("Debug", "videoPublicIds is NULL or EMPTY when clicking the button!");
                     return;
                 }
-                playVideoWithName("dribbling.mp4", videos);
+                playVideoWithName("exercisesAndCoordination.mp4", videos);
             }
         });
 
-        f_shooting = getView().findViewById(R.id.football_Shooting);
-        f_shooting.setOnClickListener(new View.OnClickListener() {
+        t_serve= getView().findViewById(R.id.tabletenis_serve);
+        t_serve.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 List<String> videos = MainActivity.videoPublicIds;
@@ -371,12 +375,12 @@ public class football_videos extends Fragment {
                     Log.e("Debug", "videoPublicIds is NULL or EMPTY when clicking the button!");
                     return;
                 }
-                playVideoWithName("shooting.mp4", videos);
+                playVideoWithName("Serve.mp4", videos);
             }
         });
 
-        f_controlling = getView().findViewById(R.id.football_Controlling);
-        f_controlling.setOnClickListener(new View.OnClickListener() {
+        t_chop = getView().findViewById(R.id.tabletenis_chop);
+        t_chop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 List<String> videos = MainActivity.videoPublicIds;
@@ -385,12 +389,12 @@ public class football_videos extends Fragment {
                     Log.e("Debug", "videoPublicIds is NULL or EMPTY when clicking the button!");
                     return;
                 }
-                playVideoWithName("controlling.mp4", videos);
+                playVideoWithName("Chop&Push.mp4", videos);
             }
         });
 
-        f_header = getView().findViewById(R.id.football_Header);
-        f_header.setOnClickListener(new View.OnClickListener() {
+        t_grip = getView().findViewById(R.id.tabletenis_grip);
+        t_grip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 List<String> videos = MainActivity.videoPublicIds;
@@ -399,12 +403,12 @@ public class football_videos extends Fragment {
                     Log.e("Debug", "videoPublicIds is NULL or EMPTY when clicking the button!");
                     return;
                 }
-                playVideoWithName("header.mp4", videos);
+                playVideoWithName("WrapGrip.mp4", videos);
             }
         });
 
-        f_chest_control = getView().findViewById(R.id.football_Chest_Controlling);
-        f_chest_control.setOnClickListener(new View.OnClickListener() {
+        t_stroke = getView().findViewById(R.id.tabletenis_stroke);
+        t_stroke.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 List<String> videos = MainActivity.videoPublicIds;
@@ -413,7 +417,7 @@ public class football_videos extends Fragment {
                     Log.e("Debug", "videoPublicIds is NULL or EMPTY when clicking the button!");
                     return;
                 }
-                playVideoWithName("chest_control.mp4", videos);
+                playVideoWithName("Strokes.mp4", videos);
             }
         });
     }
@@ -427,7 +431,9 @@ public class football_videos extends Fragment {
                 return;
             }
         }
+
         Toast.makeText(requireContext(), "Video not found: " + videoName, Toast.LENGTH_SHORT).show();
+
     }
 
     @Override

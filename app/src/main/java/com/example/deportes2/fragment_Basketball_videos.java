@@ -290,7 +290,7 @@ public class fragment_Basketball_videos extends Fragment {
         b_passing.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                List<String> videos = Sports.videoPublicIds;
+                List<String> videos = MainActivity.videoPublicIds;
                 if (videos == null || videos.isEmpty()) {
                     Toast.makeText(requireContext(), "No videos available yet! Try again in a second.", Toast.LENGTH_SHORT).show();
                     Log.e("Debug", "videoPublicIds is NULL or EMPTY when clicking the button!");
@@ -304,7 +304,7 @@ public class fragment_Basketball_videos extends Fragment {
         b_shooting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                List<String> videos = Sports.videoPublicIds;
+                List<String> videos = MainActivity.videoPublicIds;
                 if (videos == null || videos.isEmpty()) {
                     Toast.makeText(requireContext(), "No videos available yet! Try again in a second.", Toast.LENGTH_SHORT).show();
                     Log.e("Debug", "videoPublicIds is NULL or EMPTY when clicking the button!");
@@ -318,7 +318,7 @@ public class fragment_Basketball_videos extends Fragment {
         b_dribbling.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                List<String> videos = Sports.videoPublicIds;
+                List<String> videos = MainActivity.videoPublicIds;
                 if (videos == null || videos.isEmpty()) {
                     Toast.makeText(requireContext(), "No videos available yet! Try again in a second.", Toast.LENGTH_SHORT).show();
                     Log.e("Debug", "videoPublicIds is NULL or EMPTY when clicking the button!");
@@ -332,7 +332,7 @@ public class fragment_Basketball_videos extends Fragment {
         b_footwork.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                List<String> videos = Sports.videoPublicIds;
+                List<String> videos = MainActivity.videoPublicIds;
                 if (videos == null || videos.isEmpty()) {
                     Toast.makeText(requireContext(), "No videos available yet! Try again in a second.", Toast.LENGTH_SHORT).show();
                     Log.e("Debug", "videoPublicIds is NULL or EMPTY when clicking the button!");
@@ -346,7 +346,7 @@ public class fragment_Basketball_videos extends Fragment {
         b_running.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                List<String> videos = Sports.videoPublicIds;
+                List<String> videos = MainActivity.videoPublicIds;
                 if (videos == null || videos.isEmpty()) {
                     Toast.makeText(requireContext(), "No videos available yet! Try again in a second.", Toast.LENGTH_SHORT).show();
                     Log.e("Debug", "videoPublicIds is NULL or EMPTY when clicking the button!");
@@ -360,7 +360,7 @@ public class fragment_Basketball_videos extends Fragment {
         b_jumping.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                List<String> videos = Sports.videoPublicIds;
+                List<String> videos = MainActivity.videoPublicIds;
                 if (videos == null || videos.isEmpty()) {
                     Toast.makeText(requireContext(), "No videos available yet! Try again in a second.", Toast.LENGTH_SHORT).show();
                     Log.e("Debug", "videoPublicIds is NULL or EMPTY when clicking the button!");

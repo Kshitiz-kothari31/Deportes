@@ -4,12 +4,15 @@ import static com.example.deportes2.SupabaseManager.refreshAccessToken;
 
 import android.app.Activity;
 import android.content.Context;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -23,11 +26,17 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -36,11 +45,20 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
     public Fragment basketballVideosFragment = new fragment_Basketball_videos();
     public Fragment footballVideosFragment = new football_videos();
+    public Fragment volleyballVideosFragment=new vollyball_videos();
+    public Fragment tabletenisVideosFragment =new tabletennies_videos();
+    public Fragment batmintonVideosFragment=new batminton_videos();
+    public  Fragment swimmingVideosFragment=new swimming_videos();
+
     Fragment profileFragment = new FullscreenProfileFragment();
+//    Fragment chatFragment = new
     Fragment homeFragment = new HomeCommunity();
     Fragment sportsFragment = new Sports();
     Fragment activeFragment;
@@ -54,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
     private String userId;
     private String accessToken;
     SharedPreferences prefs;
+
+    public static List<String> videoPublicIds = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +162,43 @@ public class MainActivity extends AppCompatActivity {
         ImageView homeIcon = findViewById(R.id.bottom_home_icon);
         ImageView sportsIcon = findViewById(R.id.bottom_sports_icon);
         ImageView profileIcon = findViewById(R.id.bottom_profile_icon);
+//        ImageView chatIcon = findViewById(R.id.bottom_chat_icon);
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.main_content, sportsFragment, "Sports")
+                .hide(sportsFragment)
+                .commit();
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.main_content, footballVideosFragment, "FootballVideos")
+                .hide(footballVideosFragment)
+                .commit();
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.main_content, basketballVideosFragment, "BasketballVideos")
+                .hide(basketballVideosFragment)
+                .commit();
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.main_content, volleyballVideosFragment, "volleyballVideos")
+                .hide(volleyballVideosFragment)
+                .commit();
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.main_content, batmintonVideosFragment, "batmintonVideos")
+                .hide(batmintonVideosFragment)
+                .commit();
+
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.main_content, swimmingVideosFragment, "swimmingVideos")
+                .hide(swimmingVideosFragment)
+                .commit();
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.main_content, tabletenisVideosFragment, "tabletenisVideos")
+                .hide(tabletenisVideosFragment)
+                .commit();
 
         getSupportFragmentManager().beginTransaction().add(R.id.main_content, sportsFragment, "Sports").hide(sportsFragment).commit();
         getSupportFragmentManager().beginTransaction().add(R.id.main_content, footballVideosFragment, "FootballVideos").hide(footballVideosFragment).commit();
@@ -221,13 +278,64 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(activeFragment == footballVideosFragment || activeFragment == basketballVideosFragment){
+        FragmentManager fm = getSupportFragmentManager();
+
+        if(activeFragment == footballVideosFragment){
             switchFragments(sportsFragment);
-        } else if (activeFragment != homeFragment){
+        } else if (activeFragment == basketballVideosFragment) {
+            switchFragments(sportsFragment);
+        }else if (activeFragment == volleyballVideosFragment) {
+            switchFragments(sportsFragment);
+        }else if (activeFragment == tabletenisVideosFragment) {
+            switchFragments(sportsFragment);
+        } else if (activeFragment == swimmingVideosFragment) {
+            switchFragments(sportsFragment);
+        } else if (activeFragment == batmintonVideosFragment) {
+            switchFragments(sportsFragment);
+        } else if(activeFragment != homeFragment){
             switchFragments(homeFragment);
-        } else {
+        }else{
             super.onBackPressed();
         }
+    }
+
+    public void fetchVideosFromBackend(String sportName, Sports.OnVideosLoadedListener callback) {
+        RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
+        String url = "https://supabase-server-production.up.railway.app/getVideos?sport=" + sportName; // Replace with your actual backend URL
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                response -> {
+                    try {
+                        JSONArray videoArray = response.getJSONArray("videos");
+                        videoPublicIds.clear();
+
+                        for (int i = 0; i < videoArray.length(); i++) {
+                            String videourl = videoArray.getString(i);
+                            videoPublicIds.add(videourl); // Store full URLs
+                        }
+
+                        Log.d("Debug", "Fetched Video IDs: " + videoPublicIds);
+                        if (callback != null) {
+                            callback.onVideosLoaded(new ArrayList<>(videoPublicIds));
+                        }
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Log.e("Volley", "Error parsing JSON");
+                        if (callback != null) {
+                            callback.onVideosLoaded(new ArrayList<>()); // Empty list on error
+                        }
+                    }
+                },
+                error -> {
+                    Log.e("Volley", "Error fetching videos: " + error.getMessage());
+                    if (callback != null) {
+                        callback.onVideosLoaded(new ArrayList<>()); // Empty list on error
+                    }
+                });
+
+        queue.add(request);
     }
 
     private void checkAndRefreshToken() {
