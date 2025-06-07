@@ -200,9 +200,6 @@ public class MainActivity extends AppCompatActivity {
                 .hide(tabletenisVideosFragment)
                 .commit();
 
-        getSupportFragmentManager().beginTransaction().add(R.id.main_content, sportsFragment, "Sports").hide(sportsFragment).commit();
-        getSupportFragmentManager().beginTransaction().add(R.id.main_content, footballVideosFragment, "FootballVideos").hide(footballVideosFragment).commit();
-        getSupportFragmentManager().beginTransaction().add(R.id.main_content, basketballVideosFragment, "BasketballVideos").hide(basketballVideosFragment).commit();
         getSupportFragmentManager().beginTransaction().add(R.id.main_content, homeFragment, "Home").commit();
         getSupportFragmentManager().beginTransaction().add(R.id.main_content, profileFragment, "Profile").hide(profileFragment).commit();
 
