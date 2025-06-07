@@ -66,49 +66,49 @@ public class Sports extends Fragment {
             }
         });
 
-//        tabletenis.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (getActivity() instanceof MainActivity) {
-//                    ((MainActivity) getActivity()).switchFragments(
-//                            ((MainActivity) getActivity()).tabletenisVideosFragment);
-//                    fetchVideosFromBackend("TableTenis");
-//                }
-//            }
-//        });
-//
-//        volleyball.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (getActivity() instanceof MainActivity) {
-//                    ((MainActivity) getActivity()).switchFragments(
-//                            ((MainActivity) getActivity()).volleyballVideosFragment);
-//                    fetchVideosFromBackend("Volleyball");
-//                }
-//            }
-//        });
-//
-//        swimming.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (getActivity() instanceof MainActivity) {
-//                    ((MainActivity) getActivity()).switchFragments(
-//                            ((MainActivity) getActivity()).swimmingVideosFragment);
-//                    fetchVideosFromBackend("Swimming");
-//                }
-//            }
-//        });
-//
-//        batminton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (getActivity() instanceof MainActivity) {
-//                    ((MainActivity) getActivity()).switchFragments(
-//                            ((MainActivity) getActivity()).batmintonVideosFragment);
-//                    fetchVideosFromBackend("Batminton");
-//                }
-//            }
-//        });
+         tabletenis.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (getActivity() instanceof MainActivity) {
+                    MainActivity activity = (MainActivity) getActivity();
+                    activity.fetchVideosFromBackend("Tabletenis");
+                    activity.switchFragments(activity.tabletenisVideosFragment);
+                }
+            }
+        });
+
+        volleyball.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (getActivity() instanceof MainActivity) {
+                    MainActivity activity = (MainActivity) getActivity();
+                    activity.fetchVideosFromBackend("VolleyBall");
+                    activity.switchFragments(activity.volleyballVideosFragment);
+                }
+            }
+        });
+
+        swimming.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (getActivity() instanceof MainActivity) {
+                    MainActivity activity = (MainActivity) getActivity();
+                    activity.fetchVideosFromBackend("Swimming");
+                    activity.switchFragments(activity.swimmingVideosFragment);
+                }
+            }
+        });
+
+        batminton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (getActivity() instanceof MainActivity) {
+                    MainActivity activity = (MainActivity) getActivity();
+                    activity.fetchVideosFromBackend("Batminton");
+                    activity.switchFragments(activity.batmintonVideosFragment);
+                }
+            }
+        });
     }
 
     @Nullable

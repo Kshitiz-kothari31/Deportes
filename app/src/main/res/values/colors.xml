@@ -11,6 +11,10 @@
     <color name="grey">#a6a6a6</color>
     <color name="login">#EDA011</color>
 
+    <color name="purple">#673AB7</color>
+    <color name="green">#4CAF50</color>
+    <color name="orangelight">#CE3F2B</color>
+
     <color name="mainColor">#011A62</color>
     <color name="main_text_color">#070707</color>
     <color name="search_box">#F1F3F4</color>

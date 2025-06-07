@@ -32,6 +32,10 @@ public class MainActivity extends AppCompatActivity {
 
     public Fragment basketballVideosFragment = new fragment_Basketball_videos();
     public Fragment footballVideosFragment = new football_videos();
+    public Fragment volleyballVideosFragment=new vollyball_videos();
+    public Fragment tabletenisVideosFragment =new tabletennies_videos();
+    public Fragment batmintonVideosFragment=new batminton_videos();
+    public  Fragment swimmingVideosFragment=new swimming_videos();
 
     Fragment profileFragment = new FullscreenProfileFragment();
 //    Fragment chatFragment = new
@@ -82,6 +86,27 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.main_content, basketballVideosFragment, "BasketballVideos")
                 .hide(basketballVideosFragment)
+                .commit();
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.main_content, volleyballVideosFragment, "volleyballVideos")
+                .hide(volleyballVideosFragment)
+                .commit();
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.main_content, batmintonVideosFragment, "batmintonVideos")
+                .hide(batmintonVideosFragment)
+                .commit();
+
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.main_content, swimmingVideosFragment, "swimmingVideos")
+                .hide(swimmingVideosFragment)
+                .commit();
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.main_content, tabletenisVideosFragment, "tabletenisVideos")
+                .hide(tabletenisVideosFragment)
                 .commit();
 
         getSupportFragmentManager().beginTransaction()
@@ -150,6 +175,14 @@ public class MainActivity extends AppCompatActivity {
         if(activeFragment == footballVideosFragment){
             switchFragments(sportsFragment);
         } else if (activeFragment == basketballVideosFragment) {
+            switchFragments(sportsFragment);
+        }else if (activeFragment == volleyballVideosFragment) {
+            switchFragments(sportsFragment);
+        }else if (activeFragment == tabletenisVideosFragment) {
+            switchFragments(sportsFragment);
+        } else if (activeFragment == swimmingVideosFragment) {
+            switchFragments(sportsFragment);
+        } else if (activeFragment == batmintonVideosFragment) {
             switchFragments(sportsFragment);
         } else if(activeFragment != homeFragment){
             switchFragments(homeFragment);
