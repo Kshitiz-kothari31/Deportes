@@ -427,9 +427,7 @@ public class football_videos extends Fragment {
                 return;
             }
         }
-
         Toast.makeText(requireContext(), "Video not found: " + videoName, Toast.LENGTH_SHORT).show();
-
     }
 
     @Override

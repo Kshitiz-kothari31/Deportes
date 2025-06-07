@@ -191,9 +191,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void fetchVideosFromBackend(String sportName) {
+    public void fetchVideosFromBackend(String sportName, Sports.OnVideosLoadedListener callback) {
         RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
-        String url = "https://supabase-server-la9g.onrender.com/getVideos?sport=" + sportName; // Replace with your actual backend URL
+        String url = "https://supabase-server-production.up.railway.app/getVideos?sport=" + sportName; // Replace with your actual backend URL
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 response -> {
@@ -207,13 +207,25 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         Log.d("Debug", "Fetched Video IDs: " + videoPublicIds);
+                        if (callback != null) {
+                            callback.onVideosLoaded(new ArrayList<>(videoPublicIds));
+                        }
+
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                         Log.e("Volley", "Error parsing JSON");
+                        if (callback != null) {
+                            callback.onVideosLoaded(new ArrayList<>()); // Empty list on error
+                        }
                     }
                 },
-                error -> Log.e("Volley", "Error fetching videos: " + error.getMessage()));
+                error -> {
+                    Log.e("Volley", "Error fetching videos: " + error.getMessage());
+                    if (callback != null) {
+                        callback.onVideosLoaded(new ArrayList<>()); // Empty list on error
+                    }
+                });
 
         queue.add(request);
     }
