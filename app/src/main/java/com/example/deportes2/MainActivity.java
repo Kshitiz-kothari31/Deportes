@@ -3,12 +3,14 @@ package com.example.deportes2;
 import static com.example.deportes2.SupabaseManager.refreshAccessToken;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,39 +23,87 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.google.ai.client.generativeai.type.Tool;
+import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
     public Fragment basketballVideosFragment = new fragment_Basketball_videos();
     public Fragment footballVideosFragment = new football_videos();
-
     Fragment profileFragment = new FullscreenProfileFragment();
-//    Fragment chatFragment = new
     Fragment homeFragment = new HomeCommunity();
     Fragment sportsFragment = new Sports();
     Fragment activeFragment;
     ExtendedFloatingActionButton aiBtn, addpost;
 
-
     DrawerLayout drawerLayout;
     NavigationView navigationView;
+    TextView drawerName;
+    ImageView drawerPhoto;
 
+    private String userId;
+    private String accessToken;
+    SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        //        for drawer layout on 24 may
+        getSupportFragmentManager().setFragmentResultListener("profileUpdated", this, (key, bundle) -> {
+            prefs = getSharedPreferences("AuthPrefs", Context.MODE_PRIVATE);
+            userId = prefs.getString("user_id", null);
+            accessToken = prefs.getString("access_token", null);
+
+            if (userId != null && accessToken != null) {
+                SupabaseManager.getProfile(userId, accessToken, new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        if (response.isSuccessful()) {
+                            String responseBody = response.body().string();
+                            try {
+                                JSONArray jsonArray = new JSONArray(responseBody);
+                                if (jsonArray.length() > 0) {
+                                    JSONObject profile = jsonArray.getJSONObject(0);
+                                    String name = profile.optString("name", "");
+                                    String profileImageUrl = profile.optString("profile_img", "error");
+
+                                    runOnUiThread(() -> updateDrawerProfile(name, profileImageUrl));
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            Log.e("Supabase", "Failed to get profile: " + response.code());
+                        }
+                    }
+                });
+            } else {
+                Log.e("Supabase", "Missing access token or user ID in SharedPreferences");
+            }
+        });
 
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.navigation_view);
@@ -92,92 +142,67 @@ public class MainActivity extends AppCompatActivity {
         ImageView homeIcon = findViewById(R.id.bottom_home_icon);
         ImageView sportsIcon = findViewById(R.id.bottom_sports_icon);
         ImageView profileIcon = findViewById(R.id.bottom_profile_icon);
-//        ImageView chatIcon = findViewById(R.id.bottom_chat_icon);
 
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.main_content, sportsFragment, "Sports")
-                .hide(sportsFragment)
-                .commit();
-
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.main_content, footballVideosFragment, "FootballVideos")
-                .hide(footballVideosFragment)
-                .commit();
-
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.main_content, basketballVideosFragment, "BasketballVideos")
-                .hide(basketballVideosFragment)
-                .commit();
-
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.main_content, homeFragment, "Home")
-                .commit();
-
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.main_content, profileFragment, "Profile")
-                .hide(profileFragment)
-                .commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.main_content, sportsFragment, "Sports").hide(sportsFragment).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.main_content, footballVideosFragment, "FootballVideos").hide(footballVideosFragment).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.main_content, basketballVideosFragment, "BasketballVideos").hide(basketballVideosFragment).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.main_content, homeFragment, "Home").commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.main_content, profileFragment, "Profile").hide(profileFragment).commit();
 
         activeFragment = homeFragment;
 
-        homeIcon.setOnClickListener(v -> {
-            switchFragments(homeFragment);
-        });
-        sportsIcon.setOnClickListener(v -> {
-            switchFragments(sportsFragment);
-        });
-
-        profileIcon.setOnClickListener(v -> {
-            switchFragments(profileFragment);
-        });
+        homeIcon.setOnClickListener(v -> switchFragments(homeFragment));
+        sportsIcon.setOnClickListener(v -> switchFragments(sportsFragment));
+        profileIcon.setOnClickListener(v -> switchFragments(profileFragment));
 
         aiBtn = findViewById(R.id.aiBtn);
-        aiBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ai_chat.class);
-                startActivity(intent);
-            }
-        });
+        aiBtn.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, ai_chat.class)));
 
         addpost = findViewById(R.id.addPost);
-        addpost.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, WritePost.class);
-                startActivity(intent);
-
-                overridePendingTransition(R.anim.slide_in_bottom, R.anim.slide_out_bottom);
-            }
+        addpost.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, WritePost.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_bottom, R.anim.slide_out_bottom);
         });
-
     }
 
-//    search activity on 3 june
-protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences prefs = getSharedPreferences("AuthPrefs", MODE_PRIVATE);
+        String savedName = prefs.getString("name", null);
+        String savedProfileUrl = prefs.getString("profile_url", null);
+        updateDrawerProfile(savedName, savedProfileUrl);
+    }
 
-    if (requestCode == 100 && resultCode == Activity.RESULT_OK) {
-        String selectedSport = data.getStringExtra("selectedSport");
-        Log.d("MainActivity", "Selected Sport: " + selectedSport);//to check stats
+    private void updateDrawerProfile(String name, String photoUrl) {
+        NavigationView navigationView = findViewById(R.id.navigation_view);
+        View headerView = navigationView.getHeaderView(0);
+        drawerName = headerView.findViewById(R.id.username);
+        drawerPhoto = headerView.findViewById(R.id.user_photo);
 
-        if ("Basketball".equalsIgnoreCase(selectedSport)) {
-            switchFragments(basketballVideosFragment);
-        } else if ("Football".equalsIgnoreCase(selectedSport)) {
-            switchFragments(footballVideosFragment);
+        if (name != null) {
+            drawerName.setText("Hi, " + name + "!");
         }
-////            else if ("Table Tennis".equals(selectedSport)) {
-////                switchFragments(tableTennisVideosFragment); // Ensure this fragment exists
-//            } else if ("Volleyball".equals(selectedSport)) {
-//                switchFragments(volleyballVideosFragment);
-//            } else if ("Swimming".equals(selectedSport)) {
-//                switchFragments(swimmingVideosFragment);
-//            } else if ("Badminton".equals(selectedSport)) {
-//                switchFragments(badmintonVideosFragment);
-//            }
-    }
-}
 
+        if (photoUrl != null && !photoUrl.equals("error") && !photoUrl.isEmpty()) {
+            Glide.with(this).load(photoUrl).placeholder(R.drawable.user_avatar).into(drawerPhoto);
+        }
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 100 && resultCode == Activity.RESULT_OK) {
+            String selectedSport = data.getStringExtra("selectedSport");
+            Log.d("MainActivity", "Selected Sport: " + selectedSport);
+
+            if ("Basketball".equalsIgnoreCase(selectedSport)) {
+                switchFragments(basketballVideosFragment);
+            } else if ("Football".equalsIgnoreCase(selectedSport)) {
+                switchFragments(footballVideosFragment);
+            }
+        }
+    }
 
     public void switchFragments(Fragment targetFragment){
         if(activeFragment != targetFragment){
@@ -196,15 +221,11 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
     @Override
     public void onBackPressed() {
-        FragmentManager fm = getSupportFragmentManager();
-
-        if(activeFragment == footballVideosFragment){
+        if(activeFragment == footballVideosFragment || activeFragment == basketballVideosFragment){
             switchFragments(sportsFragment);
-        } else if (activeFragment == basketballVideosFragment) {
-            switchFragments(sportsFragment);
-        } else if(activeFragment != homeFragment){
+        } else if (activeFragment != homeFragment){
             switchFragments(homeFragment);
-        }else{
+        } else {
             super.onBackPressed();
         }
     }
@@ -236,5 +257,4 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
             Log.d("Auth", "Access token still valid.");
         }
     }
-
 }
