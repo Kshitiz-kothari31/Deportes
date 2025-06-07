@@ -40,7 +40,13 @@ public class Sports extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        // Initialize SearchView on 3 june
+        androidx.appcompat.widget.SearchView searchView = view.findViewById(R.id.search);
+        searchView.setFocusable(false);
+        searchView.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), SearchActivity.class);
+            getActivity().startActivityForResult(intent, 100);
+        });
         ShapeableImageView football, basketball, tabletenis, volleyball, swimming, batminton;
 
         football = getView().findViewById(R.id.footballimage);

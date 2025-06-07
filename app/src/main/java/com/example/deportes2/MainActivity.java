@@ -1,17 +1,27 @@
 package com.example.deportes2;
 
+import static com.example.deportes2.SupabaseManager.refreshAccessToken;
+
+import android.app.Activity;
+import android.content.Context;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
+import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -20,10 +30,20 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +64,15 @@ public class MainActivity extends AppCompatActivity {
     Fragment activeFragment;
     ExtendedFloatingActionButton aiBtn, addpost;
 
+    DrawerLayout drawerLayout;
+    NavigationView navigationView;
+    TextView drawerName;
+    ImageView drawerPhoto;
+
+    private String userId;
+    private String accessToken;
+    SharedPreferences prefs;
+
     public static List<String> videoPublicIds = new ArrayList<>();
 
     @Override
@@ -51,10 +80,72 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+
+        getSupportFragmentManager().setFragmentResultListener("profileUpdated", this, (key, bundle) -> {
+            prefs = getSharedPreferences("AuthPrefs", Context.MODE_PRIVATE);
+            userId = prefs.getString("user_id", null);
+            accessToken = prefs.getString("access_token", null);
+
+            if (userId != null && accessToken != null) {
+                SupabaseManager.getProfile(userId, accessToken, new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        if (response.isSuccessful()) {
+                            String responseBody = response.body().string();
+                            try {
+                                JSONArray jsonArray = new JSONArray(responseBody);
+                                if (jsonArray.length() > 0) {
+                                    JSONObject profile = jsonArray.getJSONObject(0);
+                                    String name = profile.optString("name", "");
+                                    String profileImageUrl = profile.optString("profile_img", "error");
+
+                                    runOnUiThread(() -> updateDrawerProfile(name, profileImageUrl));
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            Log.e("Supabase", "Failed to get profile: " + response.code());
+                        }
+                    }
+                });
+            } else {
+                Log.e("Supabase", "Missing access token or user ID in SharedPreferences");
+            }
+        });
+
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.navigation_view);
+
+        ImageView toolbarIcon = findViewById(R.id.toolbar_icon);
+        toolbarIcon.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
+
+        navigationView.setNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+
+            if (id == R.id.nav_profile) {
+                switchFragments(profileFragment);
+            } else if (id == R.id.nav_home) {
+                switchFragments(homeFragment);
+            } else if (id == R.id.nav_sport) {
+                switchFragments(sportsFragment);
+            } else if (id == R.id.nav_about_us) {
+                startActivity(new Intent(MainActivity.this, AboutActivity.class));
+            }
+
+            drawerLayout.closeDrawer(GravityCompat.START);
+            return true;
         });
 
         SharedPreferences prefs = getSharedPreferences("AuthPrefs", MODE_PRIVATE);
@@ -109,48 +200,65 @@ public class MainActivity extends AppCompatActivity {
                 .hide(tabletenisVideosFragment)
                 .commit();
 
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.main_content, homeFragment, "Home")
-                .commit();
-
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.main_content, profileFragment, "Profile")
-                .hide(profileFragment)
-                .commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.main_content, sportsFragment, "Sports").hide(sportsFragment).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.main_content, footballVideosFragment, "FootballVideos").hide(footballVideosFragment).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.main_content, basketballVideosFragment, "BasketballVideos").hide(basketballVideosFragment).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.main_content, homeFragment, "Home").commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.main_content, profileFragment, "Profile").hide(profileFragment).commit();
 
         activeFragment = homeFragment;
 
-        homeIcon.setOnClickListener(v -> {
-            switchFragments(homeFragment);
-        });
-        sportsIcon.setOnClickListener(v -> {
-            switchFragments(sportsFragment);
-        });
-
-        profileIcon.setOnClickListener(v -> {
-            switchFragments(profileFragment);
-        });
+        homeIcon.setOnClickListener(v -> switchFragments(homeFragment));
+        sportsIcon.setOnClickListener(v -> switchFragments(sportsFragment));
+        profileIcon.setOnClickListener(v -> switchFragments(profileFragment));
 
         aiBtn = findViewById(R.id.aiBtn);
-        aiBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ai_chat.class);
-                startActivity(intent);
-            }
-        });
+        aiBtn.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, ai_chat.class)));
 
         addpost = findViewById(R.id.addPost);
-        addpost.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, WritePost.class);
-                startActivity(intent);
-
-                overridePendingTransition(R.anim.slide_in_bottom, R.anim.slide_out_bottom);
-            }
+        addpost.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, WritePost.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_bottom, R.anim.slide_out_bottom);
         });
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences prefs = getSharedPreferences("AuthPrefs", MODE_PRIVATE);
+        String savedName = prefs.getString("name", null);
+        String savedProfileUrl = prefs.getString("profile_url", null);
+        updateDrawerProfile(savedName, savedProfileUrl);
+    }
+
+    private void updateDrawerProfile(String name, String photoUrl) {
+        NavigationView navigationView = findViewById(R.id.navigation_view);
+        View headerView = navigationView.getHeaderView(0);
+        drawerName = headerView.findViewById(R.id.username);
+        drawerPhoto = headerView.findViewById(R.id.user_photo);
+
+        if (name != null) {
+            drawerName.setText("Hi, " + name + "!");
+        }
+
+        if (photoUrl != null && !photoUrl.equals("error") && !photoUrl.isEmpty()) {
+            Glide.with(this).load(photoUrl).placeholder(R.drawable.user_avatar).into(drawerPhoto);
+        }
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 100 && resultCode == Activity.RESULT_OK) {
+            String selectedSport = data.getStringExtra("selectedSport");
+            Log.d("MainActivity", "Selected Sport: " + selectedSport);
+
+            if ("Basketball".equalsIgnoreCase(selectedSport)) {
+                switchFragments(basketballVideosFragment);
+            } else if ("Football".equalsIgnoreCase(selectedSport)) {
+                switchFragments(footballVideosFragment);
+            }
+        }
     }
 
     public void switchFragments(Fragment targetFragment){
@@ -257,5 +365,4 @@ public class MainActivity extends AppCompatActivity {
             Log.d("Auth", "Access token still valid.");
         }
     }
-
 }

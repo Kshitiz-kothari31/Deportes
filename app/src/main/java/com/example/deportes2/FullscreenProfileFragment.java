@@ -263,8 +263,15 @@ public class FullscreenProfileFragment extends Fragment {
                         Toast.makeText(requireContext(), "Profile updated successfully", Toast.LENGTH_LONG).show();
                         Bundle result = new Bundle();
                         result.putString("user_name", name);
-
+                        result.putString("profile_url", profileUrl != null ? profileUrl : "");
                         getParentFragmentManager().setFragmentResult("profileUpdated", result);
+
+                        SharedPreferences.Editor editor = getActivity().getSharedPreferences("AuthPrefs", Context.MODE_PRIVATE).edit();
+                        editor.putString("name", name);
+                        editor.putString("profile_url", profileUrl);
+                        editor.apply();
+
+
                     });
                 }else{
                     String errorBody = response.body() != null ? response.body().string() : "No response body";
