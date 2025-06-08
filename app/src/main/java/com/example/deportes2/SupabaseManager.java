@@ -38,7 +38,7 @@ import okhttp3.*;
 
 public class SupabaseManager {
 
-    private static final String SUPABASE_URL = "https://rgjgyfnwqzgpgqfihcrd.supabase.co";
+    public static final String SUPABASE_URL = "https://rgjgyfnwqzgpgqfihcrd.supabase.co";
     public static final String API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnamd5Zm53cXpncGdxZmloY3JkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwNTM2MzQsImV4cCI6MjA2MzYyOTYzNH0.WHv-2iO_5hUkcfCZeF1e2WX-YI4zEw2gMmshaRq1LB4";
 
     private static final OkHttpClient client = new OkHttpClient();
@@ -131,10 +131,6 @@ public class SupabaseManager {
         return byteBuffer.toByteArray();
     }
 
-    public static String getPublicUrl(String bucketName, String fileName) {
-        return SUPABASE_URL + "/storage/v1/object/public/" + bucketName + "/" + fileName;
-    }
-
     public interface ImageUploadCallback {
         void onSuccess(String imageUrl);
         void onFailure(String errorMessage);
@@ -213,22 +209,6 @@ public class SupabaseManager {
     public interface RefreshTokenCallback {
         void onSuccess();
         void onFailure();
-    }
-
-    public static void listVideosInFolder(String bucketName, String folderPath, Callback callback) {
-        HttpUrl url = HttpUrl.parse(SUPABASE_URL + "/storage/v1/object/list/" + bucketName)
-                .newBuilder()
-                .addQueryParameter("prefix", folderPath)
-                .build();
-
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("apikey", API_KEY)
-                .addHeader("Authorization", "Bearer " + API_KEY)
-                .get()
-                .build();
-
-        client.newCall(request).enqueue(callback);
     }
 
     public static void checkAndRefreshToken(Context context, TokenCheckCallback callback) {
@@ -431,6 +411,63 @@ public class SupabaseManager {
             return null;
         }
     }
+
+    public static void fetchPostsByUser(String userId, String accessToken, PostsCallback callback) {
+        new Thread(() -> {
+            String url = SUPABASE_URL + "/rest/v1/Posts?user_id=eq." + userId + "&order=created_at.desc&select=*,profiles(name,profile_img)";
+            try {
+                HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("apikey", API_KEY);
+                conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+
+                int responseCode = conn.getResponseCode();
+                if (responseCode == 200) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    StringBuilder sb = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    reader.close();
+                    conn.disconnect();
+
+                    Gson gson = new Gson();
+                    Type listType = new TypeToken<List<Post>>() {}.getType();
+                    List<Post> postList = gson.fromJson(sb.toString(), listType);
+
+                    callback.onPostsFetched(postList);
+                } else {
+                    callback.onError("HTTP Error: " + responseCode);
+                }
+            } catch (Exception e) {
+                callback.onError(e.getMessage());
+            }
+        }).start();
+    }
+
+    public static void sendFriendRequest(String currentUserId, String friendUserId, String accessToken, Callback callback) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("from_user_id", currentUserId);
+            json.put("to_user_id", friendUserId);
+            json.put("status", "pending");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        RequestBody body = RequestBody.create(json.toString(), MediaType.get("application/json"));
+        Request request = new Request.Builder()
+                .url(SUPABASE_URL + "/rest/v1/friend_requests")
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + accessToken)
+                .addHeader("Content-Type", "application/json")
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(callback);
+    }
+
 
     public interface CountsCallback{
         void onCountFetched(int likeCount, int commentCount);

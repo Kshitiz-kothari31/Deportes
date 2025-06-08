@@ -1,5 +1,9 @@
 package com.example.deportes2;
 
+import static android.content.Intent.getIntent;
+
+import static com.example.deportes2.SupabaseManager.getProfile;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -56,8 +60,6 @@ public class FullscreenProfileFragment extends Fragment {
     private Uri selectedProfileUri = null;
     private Uri selectedBackgroundUri = null;
 
-    Toolbar toptoolbar;
-
     public FullscreenProfileFragment(){}
 
     @Nullable
@@ -74,7 +76,6 @@ public class FullscreenProfileFragment extends Fragment {
         changebgBtn = view.findViewById(R.id.changebgImageBtn);
         profileImg = view.findViewById(R.id.profile_img);
         changeProfileBtn = view.findViewById(R.id.changeprofileImageBtn);
-
         editBtn = view.findViewById(R.id.edit_btn);
 
         nameTextView = view.findViewById(R.id.name);
@@ -85,6 +86,10 @@ public class FullscreenProfileFragment extends Fragment {
 
         bioTextView = view.findViewById(R.id.bio);
         bioEditText = view.findViewById(R.id.bio_input);
+
+        SharedPreferences prefs = getActivity().getSharedPreferences("AuthPrefs", Context.MODE_PRIVATE);
+        userId = prefs.getString("user_id", null);
+        accessToken = prefs.getString("access_token", null);
 
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.GetContent(),
@@ -104,12 +109,8 @@ public class FullscreenProfileFragment extends Fragment {
                     }
                 });
 
-        SharedPreferences prefs = getActivity().getSharedPreferences("AuthPrefs", Context.MODE_PRIVATE);
-        userId = prefs.getString("user_id", null);
-        accessToken = prefs.getString("access_token", null);
-
         if (userId != null && accessToken != null) {
-            SupabaseManager.getProfile(userId, accessToken, new Callback() {
+            getProfile(userId, accessToken, new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     e.printStackTrace();

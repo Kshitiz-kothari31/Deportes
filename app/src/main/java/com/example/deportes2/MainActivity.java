@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     TextView drawerName;
-    ImageView drawerPhoto;
+    ImageView drawerPhoto, searchbtn;
 
     private String userId;
     private String accessToken;
@@ -127,6 +127,15 @@ public class MainActivity extends AppCompatActivity {
 
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.navigation_view);
+
+        searchbtn = findViewById(R.id.searchIcon);
+        searchbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, Search.class);
+                startActivity(intent);
+            }
+        });
 
         ImageView toolbarIcon = findViewById(R.id.toolbar_icon);
         toolbarIcon.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));

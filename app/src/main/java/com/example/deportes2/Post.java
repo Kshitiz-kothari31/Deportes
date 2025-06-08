@@ -14,7 +14,6 @@ public class Post {
     private int comments;
     private boolean isLikedByCurrentUser;
 
-    // Nested Profile class
     public static class Profile {
         private String name;
         private String profile_img;
@@ -28,10 +27,8 @@ public class Post {
         }
     }
 
-    // Empty constructor required for JSON deserialization
     public Post() {}
 
-    // Full constructor (optional)
     public Post(String id, String user_id, String content, String image_url, String created_at) {
         this.id = id;
         this.user_id = user_id;
@@ -40,7 +37,6 @@ public class Post {
         this.created_at = created_at;
     }
 
-    // Getters and setters for post fields
     public String getId() {
         return id;
     }
@@ -81,7 +77,6 @@ public class Post {
         this.created_at = created_at;
     }
 
-    // Getter and setter for profiles
     public Profile getProfiles() {
         return profiles;
     }
@@ -90,12 +85,10 @@ public class Post {
         this.profiles = profiles;
     }
 
-    // Convenience method to get user name safely
     public String getUser_name() {
         return profiles != null ? profiles.getName() : "Unknown";
     }
 
-    // Convenience method to get profile image url safely
     public String getProfile_image_url() {
         return profiles != null ? profiles.getProfile_img() : null;
     }

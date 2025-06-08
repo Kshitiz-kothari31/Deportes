@@ -164,7 +164,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         }
     }
 
-
     public static String getTimeAgo(String timestamp) {
         try {
             // Fix the timezone format (remove colon)
