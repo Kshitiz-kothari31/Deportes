@@ -646,57 +646,49 @@ public class SupabaseManager {
         });
     }
 
-    public static void updateFriendRequestStatus(String requestId, String newStatus, String accessToken, CallbackBoolean callback) {
-        JSONObject json = new JSONObject();
-        try {
-            json.put("status", newStatus);  // e.g., "accepted" or "rejected"
-        } catch (JSONException e) {
-            e.printStackTrace();
-            callback.onResult(false);
-            return;
-        }
+    public static void updateFriendRequestStatus(String requestId, String status, String accessToken, StatusUpdateCallback callback) {
+        new Thread(() -> {
+            try {
+                URL url = new URL(SUPABASE_URL + "/rest/v1/friend_requests?id=eq." + requestId);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("PATCH");
+                conn.setRequestProperty("apikey", API_KEY);
+                conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
 
-        RequestBody body = RequestBody.create(json.toString(), MediaType.get("application/json"));
+                JSONObject body = new JSONObject();
+                body.put("status", status);
 
-        Request request = new Request.Builder()
-                .url(SUPABASE_URL + "/rest/v1/friend_requests?id=eq." + requestId)
-                .addHeader("apikey", API_KEY)
-                .addHeader("Authorization", "Bearer " + accessToken)
-                .addHeader("Content-Type", "application/json")
-                .patch(body)  // PATCH for updating the record
-                .build();
+                OutputStream os = conn.getOutputStream();
+                os.write(body.toString().getBytes("UTF-8"));
+                os.close();
 
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                callback.onResult(false);
+                int responseCode = conn.getResponseCode();
+                callback.onComplete(responseCode >= 200 && responseCode < 300);
+            } catch (Exception e) {
+                callback.onComplete(false);
             }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                callback.onResult(response.isSuccessful());
-            }
-        });
+        }).start();
     }
 
-    public static void unfriendUser(String currentUserId, String otherUserId, String accessToken, okhttp3.Callback callback) {
-        // Construct URL to delete friendship where (user1Id=currentUserId AND user2Id=otherUserId) OR vice versa
-        // Assuming your friends table stores both user1Id and user2Id columns to represent friendship
+    public static void unfriendUser(String currentUserId, String friend_id, String accessToken, okhttp3.Callback callback) {
+        String url = SUPABASE_URL + "/rest/v1/friends?" +
+                "or=(and(user_id.eq." + currentUserId + ",friend_id.eq." + friend_id + ")," +
+                "and(user_id.eq." + friend_id + ",friend_id.eq." + currentUserId + "))";
 
-        String filter = "or=(and(sender_id.eq." + currentUserId + ",receiver_id.eq." + otherUserId + "),and(sender_id.eq." + otherUserId + ",receiver_id.eq." + currentUserId + "))";
-        String encodedFilter = Uri.encode(filter);
-        String url = SUPABASE_URL + "/rest/v1/friends?" + encodedFilter;
-
-        okhttp3.Request request = new okhttp3.Request.Builder()
+        Request request = new Request.Builder()
                 .url(url)
                 .delete()
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .addHeader("apikey", API_KEY)
+                .addHeader("Accept", "application/json")
                 .build();
 
         OkHttpClient client = new OkHttpClient();
         client.newCall(request).enqueue(callback);
     }
+
 
     public static void cancelFriendRequest(String currentUserId, String friendUserId, String accessToken, okhttp3.Callback callback) {
         String url = SUPABASE_URL + "/rest/v1/friend_requests?" +
@@ -724,37 +716,26 @@ public class SupabaseManager {
                 conn.setRequestProperty("Content-Type", "application/json");
                 conn.setDoOutput(true);
 
-                try{
-                    JSONObject body = new JSONObject();
-                    body.put("user_id", userId);
-                    body.put("friend_id", friendId);
-                    body.put("status", "accepted");
-                    Log.d("ADD_FRIEND_BODY", body.toString()); // Optional, remove if not in schema
-                }catch (JSONException e){
-                    e.printStackTrace();
-                    callback.onFailure("JSON Error: " + e.getMessage());
-                    return;
-                }
+                JSONObject body = new JSONObject();
+                body.put("user_id", userId);
+                body.put("friend_id", friendId);
+                body.put("status", "accepted");
+
+                OutputStream os = conn.getOutputStream();
+                os.write(body.toString().getBytes("UTF-8"));
+                os.close();
 
                 int responseCode = conn.getResponseCode();
                 if (responseCode >= 200 && responseCode < 300) {
                     callback.onSuccess();
-                    Log.d("SUPABASE_SUCCESS", "Add friend success");
                 } else {
-                    InputStream errorStream = conn.getErrorStream();
-                    String errorMsg = new BufferedReader(new InputStreamReader(errorStream))
-                            .lines().collect(Collectors.joining("\n"));
-                    callback.onFailure("Error: " + responseCode + " - " + errorMsg);
-                    Log.e("SUPABASE_ERROR", "Add friend failed: " + errorMsg);
+                    callback.onFailure("Failed to insert into friends table.");
                 }
-
             } catch (Exception e) {
-                callback.onFailure("Exception: " + e.getMessage());
-                Log.e("SUPABASE_EXCEPTION", "Exception occurred", e);
+                callback.onFailure(e.toString());
             }
         }).start();
     }
-
 
     public static void checkFriendRequestStatus(String senderId, String receiverId, String accessToken, FriendRequestStatusCallback callback) {
         new Thread(() -> {
@@ -803,12 +784,10 @@ public class SupabaseManager {
     }
 
     public static void deleteRejectedFriendRequest(String currentUserId, String friendUserId, String accessToken, Callback callback) {
-        HttpUrl url = HttpUrl.parse(SUPABASE_URL + "/rest/v1/friend_requests")
-                .newBuilder()
-                .addQueryParameter("sender_id", "eq." + currentUserId)
-                .addQueryParameter("receiver_id", "eq." + friendUserId)
-                .addQueryParameter("status", "eq.rejected")
-                .build();
+        // Supabase URL encoding for complex filter: use `or` with parentheses properly
+        String url = SUPABASE_URL + "/rest/v1/friend_requests" +
+                "?or=(and(sender_id.eq." + currentUserId + ",receiver_id.eq." + friendUserId + ",status.eq.rejected)," +
+                "and(sender_id.eq." + friendUserId + ",receiver_id.eq." + currentUserId + ",status.eq.rejected))";
 
         Request request = new Request.Builder()
                 .url(url)
@@ -816,22 +795,60 @@ public class SupabaseManager {
                 .addHeader("apikey", API_KEY)
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .addHeader("Content-Type", "application/json")
+                .addHeader("Prefer", "return=representation")  // Optional: return deleted rows
                 .build();
 
+        OkHttpClient client = new OkHttpClient();
         client.newCall(request).enqueue(callback);
     }
 
-    public interface FriendRequestStatusCallback {
-        void onResult(String status, String error);
+
+
+    public static void updateFriendRequestStatusBetweenUsers(String userId1, String userId2, String status, String accessToken, okhttp3.Callback callback) {
+        String url = SUPABASE_URL + "/rest/v1/friend_requests?" +
+                "or=(and(sender_id.eq." + userId1 + ",receiver_id.eq." + userId2 + ")," +
+                "and(sender_id.eq." + userId2 + ",receiver_id.eq." + userId1 + "))";
+
+        JSONObject json = new JSONObject();
+        try {
+            json.put("status", status);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        RequestBody body = RequestBody.create(
+                json.toString(),
+                MediaType.parse("application/json")
+        );
+
+        okhttp3.Request request = new okhttp3.Request.Builder()
+                .url(url)
+                .patch(body)
+                .addHeader("Authorization", "Bearer " + accessToken)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept", "application/json")
+                .addHeader("Prefer", "return=minimal") // or return=representation if you want the result
+                .build();
+
+        OkHttpClient client = new OkHttpClient();
+        client.newCall(request).enqueue(callback);
     }
 
+
+
+    // Callback Interfaces
     public interface SupabaseCallback {
         void onSuccess();
         void onFailure(String error);
     }
 
-    public interface CallbackBoolean {
-        void onResult(boolean success);
+    public interface StatusUpdateCallback {
+        void onComplete(boolean success);
+    }
+
+    public interface FriendRequestStatusCallback {
+        void onResult(String status, String error);
     }
 
     public interface FriendRequestExistCallback {
@@ -840,11 +857,6 @@ public class SupabaseManager {
 
     public interface UserProfileCallback {
         void onProfileFetched(UserProfile profile);
-        void onError(String error);
-    }
-
-    public interface FriendsCallback {
-        void onFriendsFetched(List<UserProfile> friends);
         void onError(String error);
     }
 

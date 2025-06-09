@@ -63,60 +63,60 @@ public class Notification_Activity extends AppCompatActivity {
                 }
             });
         }
+
+
     }
 
     private void handleAction(String requestId, String action) {
         SupabaseManager.checkAndRefreshToken(this, new SupabaseManager.TokenCheckCallback() {
             @Override
             public void onTokenReady(String accessToken) {
-                SupabaseManager.updateFriendRequestStatus(requestId, action, accessToken, success -> {
+                // Use "accepted" or "rejected" as status values, normalize action string
+                String status = action.equalsIgnoreCase("accept") ? "accepted" : action.equalsIgnoreCase("reject") ? "rejected" : action;
+
+                SupabaseManager.updateFriendRequestStatus(requestId, status, accessToken, success -> {
                     runOnUiThread(() -> {
                         if (success) {
-                            if (action.equals("accept")) {
-                                // Find the sender_id from the request
+                            if (status.equals("accepted")) {
                                 FriendRequest request = findRequestById(requestId);
                                 if (request != null) {
-                                    senderId = request.getSenderId();
-                                    Log.e("Sender_id_check", "Sender ID: " + senderId);
+                                    String senderId = request.getSenderId();
 
-                                    Log.d("DEBUG_FLOW", "Sender ID from request: " + request.getSenderId());
                                     SupabaseManager.addToFriendsTable(currentUserId, senderId, accessToken, new SupabaseManager.SupabaseCallback() {
                                         @Override
                                         public void onSuccess() {
-                                            Log.d("FRIEND_ADD", "First row (user -> friend) added");
-                                            // Add reverse relationship
                                             SupabaseManager.addToFriendsTable(senderId, currentUserId, accessToken, new SupabaseManager.SupabaseCallback() {
                                                 @Override
                                                 public void onSuccess() {
-                                                    Log.d("FRIEND_ADD", "Second row (friend -> user) added");
-                                                    Toast.makeText(getApplicationContext(), "Friendship established!", Toast.LENGTH_SHORT).show();
-                                                    recreate(); // refresh list
+                                                    Toast.makeText(getApplicationContext(), "Friendship added!", Toast.LENGTH_SHORT).show();
+                                                    recreate(); // Refresh UI
                                                 }
 
                                                 @Override
                                                 public void onFailure(String error) {
-                                                    Log.d("FRIEND_ADD", "Failed to add reverse friend row: " + error);
-                                                    Toast.makeText(getApplicationContext(), "Friend added, but failed to add reverse entry", Toast.LENGTH_SHORT).show();
-                                                    recreate(); // still refresh list
+                                                    Log.e("FRIENDSHIP", "Error adding reverse: " + error);
+                                                    Toast.makeText(getApplicationContext(), "Partial friendship created", Toast.LENGTH_SHORT).show();
+                                                    recreate();
                                                 }
                                             });
                                         }
 
                                         @Override
                                         public void onFailure(String error) {
-                                            Toast.makeText(getApplicationContext(), "Error adding friend: " + error, Toast.LENGTH_SHORT).show();
-                                            Log.d("Friend table error", error);
+                                            Log.e("FRIENDSHIP", "Error adding friendship: " + error);
+                                            Toast.makeText(getApplicationContext(), "Failed to add friend", Toast.LENGTH_SHORT).show();
                                         }
                                     });
-                                }else {
-                                    Log.d("DEBUG_REQUEST", "Found request: " + (request != null ? "YES" : "NO"));
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Friend request not found", Toast.LENGTH_SHORT).show();
                                 }
                             } else {
-                                Toast.makeText(getApplicationContext(), "Request " + action + "ed", Toast.LENGTH_SHORT).show();
-                                recreate(); // Refresh the list after action
+                                // For rejected or other actions
+                                Toast.makeText(getApplicationContext(), "Request " + status + ".", Toast.LENGTH_SHORT).show();
+                                recreate();
                             }
                         } else {
-                            Toast.makeText(getApplicationContext(), "Failed to " + action + " request", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Failed to update request", Toast.LENGTH_SHORT).show();
                         }
                     });
                 });
@@ -124,21 +124,21 @@ public class Notification_Activity extends AppCompatActivity {
 
             @Override
             public void onError(String errorMessage) {
-                runOnUiThread(() ->
-                        Toast.makeText(Notification_Activity.this, errorMessage, Toast.LENGTH_SHORT).show()
-                );
+                runOnUiThread(() -> Toast.makeText(Notification_Activity.this, errorMessage, Toast.LENGTH_SHORT).show());
             }
         });
     }
 
+    // Fix the findRequestById to actually compare by request ID, not senderId
     private FriendRequest findRequestById(String requestId) {
         for (FriendRequest request : friendRequests) {
-            Log.d("DEBUG_REQUEST", "Checking requestId: " + request.getSenderId());
-            if (request.getSenderId().equals(requestId)) {
+            Log.d("DEBUG_REQUEST", "Checking requestId: " + request.getId());
+            if (request.getId().equals(requestId)) {
                 return request;
             }
         }
         return null;
     }
+
 
 }
