@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     TextView drawerName;
-    ImageView drawerPhoto, searchbtn, notificationIcon;
+    ImageView drawerPhoto, searchbtn, notificationIcon, chat_icon;
 
     private String userId;
     private String accessToken;
@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         notificationIcon = findViewById(R.id.toolbar_notification);
+        chat_icon = findViewById(R.id.bottom_chat_icon);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -139,6 +140,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        chat_icon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, FriendsListActivity.class);
+                startActivity(intent);
+            }
+        });
+
         ImageView toolbarIcon = findViewById(R.id.toolbar_icon);
         toolbarIcon.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
 
@@ -161,8 +170,6 @@ public class MainActivity extends AppCompatActivity {
             return true;
 
         });
-
-
 
         notificationIcon.setOnClickListener(new View.OnClickListener() {
             @Override

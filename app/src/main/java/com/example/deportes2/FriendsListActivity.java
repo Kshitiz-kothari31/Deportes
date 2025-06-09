@@ -18,11 +18,10 @@ import java.util.List;
 
 public class FriendsListActivity extends AppCompatActivity {
 
-//    private RecyclerView recyclerView;
-//    private ProgressBar progressBar;
-//    private FriendsAdapter adapter;
-//    private List<UserProfile> friendList = new ArrayList<>();
-
+    private RecyclerView recyclerView;
+    private ProgressBar progressBar;
+    private FriendAdapter adapter;
+    private List<UserProfile> friendList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,42 +34,42 @@ public class FriendsListActivity extends AppCompatActivity {
             return insets;
         });
 
-//        recyclerView = findViewById(R.id.recyclerViewFriends);
-//        progressBar = findViewById(R.id.progressBar);
-//
-//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        adapter = new FriendsAdapter(friendList);
-//        recyclerView.setAdapter(adapter);
-//
-//        SupabaseManager.checkAndRefreshToken(this, new SupabaseManager.TokenCheckCallback() {
-//            @Override
-//            public void onTokenReady(String accessToken) {
-//                progressBar.setVisibility(View.VISIBLE);
-//                SupabaseManager.getFriendsList(accessToken, new SupabaseManager.FriendsCallback() {
-//                    @Override
-//                    public void onFriendsFetched(List<UserProfile> friends) {
-//                        runOnUiThread(() -> {
-//                            progressBar.setVisibility(View.GONE);
-//                            friendList.clear();
-//                            friendList.addAll(friends);
-//                            adapter.notifyDataSetChanged();
-//                        });
-//                    }
-//
-//                    @Override
-//                    public void onError(String error) {
-//                        runOnUiThread(() -> {
-//                            progressBar.setVisibility(View.GONE);
-//                            Toast.makeText(FriendsListActivity.this, error, Toast.LENGTH_SHORT).show();
-//                        });
-//                    }
-//                });
-//            }
-//
-//            @Override
-//            public void onError(String errorMessage) {
-//                Toast.makeText(FriendsListActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
-//            }
-//        });
+        recyclerView = findViewById(R.id.recyclerViewFriends);
+        progressBar = findViewById(R.id.progressBar);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new FriendAdapter(friendList, this);
+        recyclerView.setAdapter(adapter);
+
+        SupabaseManager.checkAndRefreshToken(this, new SupabaseManager.TokenCheckCallback() {
+            @Override
+            public void onTokenReady(String accessToken) {
+                progressBar.setVisibility(View.VISIBLE);
+                SupabaseManager.getFriendsList(accessToken, new SupabaseManager.FriendsCallback() {
+                    @Override
+                    public void onFriendsFetched(List<UserProfile> friends) {
+                        runOnUiThread(() -> {
+                            progressBar.setVisibility(View.GONE);
+                            friendList.clear();
+                            friendList.addAll(friends);
+                            adapter.notifyDataSetChanged();
+                        });
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        runOnUiThread(() -> {
+                            progressBar.setVisibility(View.GONE);
+                            Toast.makeText(FriendsListActivity.this, error, Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Toast.makeText(FriendsListActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

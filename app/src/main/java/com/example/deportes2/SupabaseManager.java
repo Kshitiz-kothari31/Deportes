@@ -7,6 +7,9 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
 import androidx.annotation.Nullable;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -835,7 +838,103 @@ public class SupabaseManager {
         client.newCall(request).enqueue(callback);
     }
 
+    public static void getFriendsList(String accessToken, FriendsCallback callback) {
+        new Thread(() -> {
+            try {
+                String userId = getUserIdFromJwt(accessToken);
 
+                // 1. Fetch from `friends` table
+                String friendsUrl = SUPABASE_URL + "/rest/v1/friends" +
+                        "?or=(user_id.eq." + userId + ",friend_id.eq." + userId + ")" +
+                        "&status=eq.accepted" +
+                        "&select=*";
+
+                URL url = new URL(friendsUrl);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+                conn.setRequestProperty("apikey", API_KEY);
+
+                int responseCode = conn.getResponseCode();
+                if (responseCode != 200) {
+                    callback.onError("Failed to fetch friends list: " + responseCode);
+                    return;
+                }
+
+                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder responseBuilder = new StringBuilder();
+                String line;
+                while ((line = in.readLine()) != null) responseBuilder.append(line);
+                in.close();
+
+                JSONArray friendsArray = new JSONArray(responseBuilder.toString());
+
+                // 2. Extract friend IDs
+                List<String> friendIds = new ArrayList<>();
+                for (int i = 0; i < friendsArray.length(); i++) {
+                    JSONObject obj = friendsArray.getJSONObject(i);
+                    String user_id = obj.getString("user_id");
+                    String friend_id = obj.getString("friend_id");
+                    String actualFriendId = user_id.equals(userId) ? friend_id : user_id;
+                    friendIds.add(actualFriendId);
+                }
+
+                if (friendIds.isEmpty()) {
+                    callback.onFriendsFetched(new ArrayList<>());
+                    return;
+                }
+
+                // 3. Fetch profiles using OR filters
+                StringBuilder orConditions = new StringBuilder();
+                for (String id : friendIds) {
+                    if (orConditions.length() > 0) orConditions.append(",");
+                    orConditions.append("id.eq.").append(id);
+                }
+
+                String profilesUrl = SUPABASE_URL + "/rest/v1/profiles?or=(" + orConditions + ")&select=id,name,profile_img";
+
+                URL profilesFetchUrl = new URL(profilesUrl);
+                HttpURLConnection profileConn = (HttpURLConnection) profilesFetchUrl.openConnection();
+                profileConn.setRequestMethod("GET");
+                profileConn.setRequestProperty("Authorization", "Bearer " + accessToken);
+                profileConn.setRequestProperty("apikey", API_KEY);
+
+                int profileCode = profileConn.getResponseCode();
+                if (profileCode != 200) {
+                    callback.onError("Failed to fetch profiles: " + profileCode);
+                    return;
+                }
+
+                BufferedReader profileIn = new BufferedReader(new InputStreamReader(profileConn.getInputStream()));
+                StringBuilder profileBuilder = new StringBuilder();
+                String line2;
+                while ((line2 = profileIn.readLine()) != null) profileBuilder.append(line2);
+                profileIn.close();
+
+                JSONArray profileArray = new JSONArray(profileBuilder.toString());
+                List<UserProfile> resultProfiles = new ArrayList<>();
+                for (int i = 0; i < profileArray.length(); i++) {
+                    JSONObject profile = profileArray.getJSONObject(i);
+                    String id = profile.getString("id");
+                    String name = profile.optString("name", "Unknown");
+                    String imageUrl = profile.optString("profile_img", "");
+                    resultProfiles.add(new UserProfile(id, name, imageUrl));
+                }
+
+                callback.onFriendsFetched(resultProfiles);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                callback.onError("Exception: " + e.getMessage());
+            }
+        }).start();
+    }
+
+
+    public interface FriendsCallback {
+        void onFriendsFetched(List<UserProfile> friends);
+        void onError(String error);
+    }
 
     // Callback Interfaces
     public interface SupabaseCallback {
