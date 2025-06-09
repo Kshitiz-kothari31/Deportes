@@ -724,15 +724,16 @@ public class SupabaseManager {
                 conn.setRequestProperty("Content-Type", "application/json");
                 conn.setDoOutput(true);
 
-                JSONObject body = new JSONObject();
-                body.put("user_id", userId);
-                body.put("friend_id", friendId);
-                body.put("status", "accepted");
-                Log.d("ADD_FRIEND_BODY", body.toString()); // Optional, remove if not in schema
-
-                try (OutputStream os = conn.getOutputStream()) {
-                    byte[] input = body.toString().getBytes("utf-8");
-                    os.write(input, 0, input.length);
+                try{
+                    JSONObject body = new JSONObject();
+                    body.put("user_id", userId);
+                    body.put("friend_id", friendId);
+                    body.put("status", "accepted");
+                    Log.d("ADD_FRIEND_BODY", body.toString()); // Optional, remove if not in schema
+                }catch (JSONException e){
+                    e.printStackTrace();
+                    callback.onFailure("JSON Error: " + e.getMessage());
+                    return;
                 }
 
                 int responseCode = conn.getResponseCode();

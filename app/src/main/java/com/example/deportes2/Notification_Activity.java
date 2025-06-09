@@ -75,7 +75,6 @@ public class Notification_Activity extends AppCompatActivity {
                             if (action.equals("accept")) {
                                 // Find the sender_id from the request
                                 FriendRequest request = findRequestById(requestId);
-                                Log.d("DEBUG_REQUEST", "Found request: " + (request != null ? "YES" : "NO"));
                                 if (request != null) {
                                     senderId = request.getSenderId();
                                     Log.e("Sender_id_check", "Sender ID: " + senderId);
@@ -109,7 +108,8 @@ public class Notification_Activity extends AppCompatActivity {
                                             Log.d("Friend table error", error);
                                         }
                                     });
-
+                                }else {
+                                    Log.d("DEBUG_REQUEST", "Found request: " + (request != null ? "YES" : "NO"));
                                 }
                             } else {
                                 Toast.makeText(getApplicationContext(), "Request " + action + "ed", Toast.LENGTH_SHORT).show();
