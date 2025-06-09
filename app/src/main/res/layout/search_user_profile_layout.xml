@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:theme="@style/ThemeOverlay.Deportes2.FullscreenContainer"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".FullscreenProfileFragment">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/users_profile"
+    android:theme="@style/ThemeOverlay.Deportes2.FullscreenContainer"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".FullscreenProfileFragment">
 
-        <!-- Scrollable Profile Section -->
+    <!-- Scrollable Profile Section -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/profileScrollView"
         android:layout_width="match_parent"
@@ -20,9 +21,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!-- Your full profile UI goes here, from bg_img to bio_input -->
             <ImageView
-                android:id="@+id/bg_img"
+                android:id="@+id/users_bg_img"
                 android:layout_width="match_parent"
                 android:layout_height="130dp"
                 android:background="@color/grey"
@@ -39,8 +39,8 @@
                 android:layout_marginBottom="10dp"
                 android:visibility="gone"
                 android:background="@drawable/rounded_edit_24"
-                app:layout_constraintBottom_toBottomOf="@+id/bg_img"
-                app:layout_constraintEnd_toEndOf="@+id/bg_img" />
+                app:layout_constraintBottom_toBottomOf="@+id/users_bg_img"
+                app:layout_constraintEnd_toEndOf="@+id/users_bg_img" />
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/profile_img"
@@ -123,18 +123,49 @@
                 app:layout_constraintTop_toBottomOf="@+id/name_input" />
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/edit_btn"
-                android:layout_width="70dp"
+                android:id="@+id/addFriend"
+                android:layout_width="80dp"
                 android:layout_height="30dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="24dp"
                 android:background="@drawable/profile_circle"
                 android:backgroundTint="@color/mainColor"
                 android:src="@drawable/message"
-                android:text="Edit"
+                android:text="Add +"
+                android:textSize="10sp"
                 android:textColor="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/bg_img" />
+                app:layout_constraintTop_toBottomOf="@+id/users_bg_img" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/requestSentBtn"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/profile_circle"
+                android:backgroundTint="@color/mainColor"
+                android:src="@drawable/message"
+                android:text="Cancel"
+                android:textSize="10sp"
+                android:textColor="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/users_bg_img" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/unFriendBtn"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/profile_circle"
+                android:backgroundTint="@color/mainColor"
+                android:src="@drawable/message"
+                android:text="UnFriend"
+                android:textSize="10sp"
+                android:textColor="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/users_bg_img" />
 
             <TextView
                 android:id="@+id/bio"
@@ -200,7 +231,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp"
+                android:paddingTop="16dp"
                 android:layout_marginTop="20dp"
                 app:layout_constraintTop_toBottomOf="@+id/hrLine"
                 app:layout_constraintStart_toStartOf="parent"

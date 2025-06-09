@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     TextView drawerName;
-    ImageView drawerPhoto;
+    ImageView drawerPhoto, searchbtn, notificationIcon;
 
     private String userId;
     private String accessToken;
@@ -80,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        notificationIcon = findViewById(R.id.toolbar_notification);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -128,6 +130,15 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.navigation_view);
 
+        searchbtn = findViewById(R.id.searchIcon);
+        searchbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, Search.class);
+                startActivity(intent);
+            }
+        });
+
         ImageView toolbarIcon = findViewById(R.id.toolbar_icon);
         toolbarIcon.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
 
@@ -152,6 +163,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+
+        notificationIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, Notification_Activity.class);
+                startActivity(intent);
+            }
+        });
 
         SharedPreferences prefs = getSharedPreferences("AuthPrefs", MODE_PRIVATE);
         String token = prefs.getString("access_token", null);
@@ -205,6 +224,9 @@ public class MainActivity extends AppCompatActivity {
                 .hide(tabletenisVideosFragment)
                 .commit();
 
+        getSupportFragmentManager().beginTransaction().add(R.id.main_content, sportsFragment, "Sports").hide(sportsFragment).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.main_content, footballVideosFragment, "FootballVideos").hide(footballVideosFragment).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.main_content, basketballVideosFragment, "BasketballVideos").hide(basketballVideosFragment).commit();
         getSupportFragmentManager().beginTransaction().add(R.id.main_content, homeFragment, "Home").commit();
         getSupportFragmentManager().beginTransaction().add(R.id.main_content, profileFragment, "Profile").hide(profileFragment).commit();
 

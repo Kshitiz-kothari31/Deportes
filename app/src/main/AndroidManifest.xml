@@ -12,6 +12,7 @@
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
+        android:enableOnBackInvokedCallback="true"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="Deportes"
@@ -29,9 +30,22 @@
             android:exported="true"
             />
         <activity
+            android:name=".Notification_Activity"
+            android:exported="false" />
+        <activity
+            android:name=".FriendsListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SearchUserProfileLayoutActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Search"
+            android:exported="true" />
+
+        <activity
             android:name=".WritePost"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".signUp"
             android:exported="true" />
