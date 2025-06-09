@@ -1,8 +1,10 @@
 package com.example.deportes2;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -12,7 +14,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +23,9 @@ public class FriendsListActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private FriendAdapter adapter;
     private List<UserProfile> friendList = new ArrayList<>();
+
+    ImageView backButton;
+    TextView name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,22 +38,33 @@ public class FriendsListActivity extends AppCompatActivity {
             return insets;
         });
 
+        backButton = findViewById(R.id.listActivityBackBtn);
+        backButton.setOnClickListener(v -> {
+            onBackPressed();
+        });
+
         recyclerView = findViewById(R.id.recyclerViewFriends);
         progressBar = findViewById(R.id.progressBar);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new FriendAdapter(friendList, this);
+        adapter = new FriendAdapter(friendList, this, friend -> {
+            Intent intent = new Intent(FriendsListActivity.this, ChatActivity.class);
+            intent.putExtra("friend_id", friend.getId());
+            intent.putExtra("friend_name", friend.getName());
+            intent.putExtra("friend_profile_url", friend.getProfileImageUrl());
+            startActivity(intent);
+        });
         recyclerView.setAdapter(adapter);
 
         SupabaseManager.checkAndRefreshToken(this, new SupabaseManager.TokenCheckCallback() {
             @Override
             public void onTokenReady(String accessToken) {
-                progressBar.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(ProgressBar.VISIBLE);
                 SupabaseManager.getFriendsList(accessToken, new SupabaseManager.FriendsCallback() {
                     @Override
                     public void onFriendsFetched(List<UserProfile> friends) {
                         runOnUiThread(() -> {
-                            progressBar.setVisibility(View.GONE);
+                            progressBar.setVisibility(ProgressBar.GONE);
                             friendList.clear();
                             friendList.addAll(friends);
                             adapter.notifyDataSetChanged();
@@ -59,7 +74,7 @@ public class FriendsListActivity extends AppCompatActivity {
                     @Override
                     public void onError(String error) {
                         runOnUiThread(() -> {
-                            progressBar.setVisibility(View.GONE);
+                            progressBar.setVisibility(ProgressBar.GONE);
                             Toast.makeText(FriendsListActivity.this, error, Toast.LENGTH_SHORT).show();
                         });
                     }

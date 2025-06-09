@@ -16,12 +16,18 @@ import java.util.List;
 
 public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendViewHolder> {
 
-    private List<UserProfile> userList;
+    private List<UserProfile> friends;
     private Context context;
+    private OnFriendClickListener listener;
 
-    public FriendAdapter(List<UserProfile> userList, Context context) {
-        this.userList = userList;
+    public interface OnFriendClickListener {
+        void onFriendClick(UserProfile friend);
+    }
+
+    public FriendAdapter(List<UserProfile> friends, Context context, OnFriendClickListener listener) {
+        this.friends = friends;
         this.context = context;
+        this.listener = listener;
     }
 
     @NonNull
@@ -33,18 +39,24 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendView
 
     @Override
     public void onBindViewHolder(@NonNull FriendViewHolder holder, int position) {
-        UserProfile user = userList.get(position);
-        holder.friendName.setText(user.getName());
+        UserProfile friend = friends.get(position);
+        holder.friendName.setText(friend.getName());
 
         Glide.with(context)
-                .load(user.getProfileImageUrl())
+                .load(friend.getProfileImageUrl())
                 .placeholder(R.drawable.ic_profile)
                 .into(holder.friendProfileImage);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onFriendClick(friend);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return userList.size();
+        return friends.size();
     }
 
     static class FriendViewHolder extends RecyclerView.ViewHolder {

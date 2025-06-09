@@ -2,9 +2,9 @@
 <resources>
 
     <style name="CustomSearchViewStyle" parent="Widget.AppCompat.SearchView">
-        <item name="queryBackground">@color/search_box</item>
-        <item name="background">@color/search_box</item>
+        <item name="android:background"></item>
         <item name="android:textSize">5sp</item>
+        <item name="cornerSize">50dp</item>
     </style>
 
     <style name="roundedImageView">
