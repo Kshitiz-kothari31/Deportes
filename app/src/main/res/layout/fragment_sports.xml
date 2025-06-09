@@ -30,7 +30,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/sports_Constraintlayout"
             app:queryHint="Search"
-            app:searchIcon="@drawable/baseline_search_24" />
+            app:searchIcon="@drawable/searchicon" />
 
         <TextView
             android:id="@+id/viewallbtn"

@@ -124,7 +124,7 @@
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/addFriend"
-                android:layout_width="70dp"
+                android:layout_width="80dp"
                 android:layout_height="30dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="24dp"
@@ -132,6 +132,37 @@
                 android:backgroundTint="@color/mainColor"
                 android:src="@drawable/message"
                 android:text="Add +"
+                android:textSize="10sp"
+                android:textColor="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/users_bg_img" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/requestSentBtn"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/profile_circle"
+                android:backgroundTint="@color/mainColor"
+                android:src="@drawable/message"
+                android:text="Cancel"
+                android:textSize="10sp"
+                android:textColor="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/users_bg_img" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/unFriendBtn"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/profile_circle"
+                android:backgroundTint="@color/mainColor"
+                android:src="@drawable/message"
+                android:text="UnFriend"
+                android:textSize="10sp"
                 android:textColor="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/users_bg_img" />

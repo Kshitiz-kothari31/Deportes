@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     TextView drawerName;
-    ImageView drawerPhoto, searchbtn;
+    ImageView drawerPhoto, searchbtn, notificationIcon;
 
     private String userId;
     private String accessToken;
@@ -80,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        notificationIcon = findViewById(R.id.toolbar_notification);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -155,6 +157,14 @@ public class MainActivity extends AppCompatActivity {
 
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
+        });
+
+        notificationIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, Notification_Activity.class);
+                startActivity(intent);
+            }
         });
 
         SharedPreferences prefs = getSharedPreferences("AuthPrefs", MODE_PRIVATE);
