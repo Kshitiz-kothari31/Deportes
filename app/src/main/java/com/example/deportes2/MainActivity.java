@@ -151,13 +151,18 @@ public class MainActivity extends AppCompatActivity {
                 switchFragments(homeFragment);
             } else if (id == R.id.nav_sport) {
                 switchFragments(sportsFragment);
-            } else if (id == R.id.nav_about_us) {
+            }else if (id == R.id.nav_about_us) {
                 startActivity(new Intent(MainActivity.this, AboutActivity.class));
+            } else if (id == R.id.nav_logout) {
+                logoutUser();  // 👈 Your custom method
             }
 
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
+
         });
+
+
 
         notificationIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -219,6 +224,9 @@ public class MainActivity extends AppCompatActivity {
                 .hide(tabletenisVideosFragment)
                 .commit();
 
+        getSupportFragmentManager().beginTransaction().add(R.id.main_content, sportsFragment, "Sports").hide(sportsFragment).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.main_content, footballVideosFragment, "FootballVideos").hide(footballVideosFragment).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.main_content, basketballVideosFragment, "BasketballVideos").hide(basketballVideosFragment).commit();
         getSupportFragmentManager().beginTransaction().add(R.id.main_content, homeFragment, "Home").commit();
         getSupportFragmentManager().beginTransaction().add(R.id.main_content, profileFragment, "Profile").hide(profileFragment).commit();
 
@@ -238,6 +246,18 @@ public class MainActivity extends AppCompatActivity {
             overridePendingTransition(R.anim.slide_in_bottom, R.anim.slide_out_bottom);
         });
     }
+
+    private void logoutUser() {
+        SharedPreferences.Editor editor = getSharedPreferences("AuthPrefs", MODE_PRIVATE).edit();
+        editor.clear();
+        editor.apply();
+
+        Intent intent = new Intent(MainActivity.this, Login.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
 
     @Override
     protected void onResume() {
@@ -273,6 +293,14 @@ public class MainActivity extends AppCompatActivity {
                 switchFragments(basketballVideosFragment);
             } else if ("Football".equalsIgnoreCase(selectedSport)) {
                 switchFragments(footballVideosFragment);
+            }else if ("table tennis".equalsIgnoreCase(selectedSport)) {
+                switchFragments(tabletenisVideosFragment);
+            }else if ("badminton".equalsIgnoreCase(selectedSport)) {
+                switchFragments(batmintonVideosFragment);
+            }else if ("volleyball".equalsIgnoreCase(selectedSport)) {
+                switchFragments(volleyballVideosFragment);
+            }else if ("swimming".equalsIgnoreCase(selectedSport)) {
+                switchFragments(swimmingVideosFragment);
             }
         }
     }
