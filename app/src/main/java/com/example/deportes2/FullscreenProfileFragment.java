@@ -27,6 +27,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.imageview.ShapeableImageView;
 
 import com.example.deportes2.SupabaseManager;
@@ -40,6 +43,8 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FullscreenProfileFragment extends Fragment {
 
@@ -48,6 +53,7 @@ public class FullscreenProfileFragment extends Fragment {
     private AppCompatButton editBtn, changebgBtn, changeProfileBtn;
     private TextView nameTextView, userNameTextView, bioTextView;
     private EditText nameEditText, userNameEdit,  bioEditText;
+    private LinearLayout postsContainer;
 
     private boolean isEditMode = false;
     private boolean editingProfileImage = false;
@@ -72,6 +78,7 @@ public class FullscreenProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        postsContainer = requireView().findViewById(R.id.postsContainer);
         bgImg = view.findViewById(R.id.bg_img);
         changebgBtn = view.findViewById(R.id.changebgImageBtn);
         profileImg = view.findViewById(R.id.profile_img);
@@ -142,6 +149,9 @@ public class FullscreenProfileFragment extends Fragment {
                                     // Load profile and background images using Glide or Picasso
                                     Glide.with(requireContext()).load(profileImageUrl).into(profileImg);
                                     Glide.with(requireContext()).load(backgroundImageUrl).into(bgImg);
+
+                                    fetchUserPosts(userId);
+
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -284,25 +294,64 @@ public class FullscreenProfileFragment extends Fragment {
         });
     }
 
-    private void addPostToLayout(String name, String time, String message, String imageUrl, String profile_url){
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        View postView = inflater.inflate(R.layout.post, null);
+    private void fetchUserPosts(String userId) {
+        SupabaseManager.checkAndRefreshToken(requireContext(), new SupabaseManager.TokenCheckCallback() {
+            @Override
+            public void onTokenReady(String accessToken) {
+                SupabaseManager.fetchPostsByUser(userId, accessToken, new SupabaseManager.PostsCallback() {
+                    @Override
+                    public void onPostsFetched(List<Post> posts) {
+                        requireActivity().runOnUiThread(() -> {
+                            postsContainer.removeAllViews();
+                            for (Post post : posts) {
+                                View postView = LayoutInflater.from(requireContext()).inflate(R.layout.post, postsContainer, false);
 
-        TextView USER_NAME = postView.findViewById(R.id.name);
-        TextView TIME = postView.findViewById(R.id.time);
-        TextView POST_MESSAGE = postView.findViewById(R.id.postMessage);
-        ShapeableImageView POST_IMG = postView.findViewById(R.id.postimg);
-        ShapeableImageView USER_IMAGE = postView.findViewById(R.id.userImg);
+                                ShapeableImageView postProfileImg = postView.findViewById(R.id.userImg);
+                                TextView postname = postView.findViewById(R.id.name);
+                                TextView postCreatedAt = postView.findViewById(R.id.time);
+                                TextView postText = postView.findViewById(R.id.postMessage);
+                                ShapeableImageView postImage = postView.findViewById(R.id.postimg);
 
-        USER_NAME.setText(name);
-        TIME.setText(time);
-        POST_MESSAGE.setText(message);
-        Glide.with(this).load(profile_url).into(USER_IMAGE);
-        Glide.with(this).load(imageUrl).into(POST_IMG);
+                                postname.setText(post.getUser_name());
+                                String timeAgo = PostAdapter.getTimeAgo(post.getCreated_at());
+                                postCreatedAt.setText(timeAgo);
+                                postText.setText(post.getContent());
 
-        LinearLayout postsContainer = requireView().findViewById(R.id.postsContainer);
-        postsContainer.addView(postView);
+                                Glide.with(requireContext())
+                                        .load(post.getProfile_image_url())
+                                        .into(postProfileImg);
 
+                                if (post.getImage_url() != null && !post.getImage_url().isEmpty()) {
+                                    postImage.setVisibility(View.VISIBLE);
+                                    Glide.with(requireContext())
+                                            .load(post.getImage_url())
+                                            .into(postImage);
+                                } else {
+                                    postImage.setVisibility(View.GONE);
+                                }
+
+                                postsContainer.addView(postView);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        requireActivity().runOnUiThread(() ->
+                                Toast.makeText(requireContext(), "Failed to load posts: " + error, Toast.LENGTH_SHORT).show()
+                        );
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                requireActivity().runOnUiThread(() ->
+                        Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                );
+            }
+        });
     }
+
 
 }

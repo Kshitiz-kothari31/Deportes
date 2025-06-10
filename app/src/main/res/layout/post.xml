@@ -39,44 +39,66 @@
         app:layout_constraintStart_toStartOf="@+id/name"
         app:layout_constraintTop_toBottomOf="@+id/name" />
 
-    <TextView
-        android:id="@+id/postMessage"
-        android:layout_width="wrap_content"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/postCard"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="hello"
-        android:textSize="15dp"
-        app:layout_constraintBottom_toTopOf="@+id/postimg"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_margin="12dp"
+        app:cardUseCompatPadding="true"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@android:color/transparent"
+        android:background="@android:color/transparent"
         app:layout_constraintStart_toStartOf="@+id/time"
-        app:layout_constraintTop_toBottomOf="@+id/time" />
+        app:layout_constraintTop_toBottomOf="@+id/time"
+        app:layout_constraintBottom_toTopOf="@+id/LikeBtn">
 
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/postimg"
-        android:layout_width="250dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="25dp"
-        android:scaleType="centerCrop"
-        android:src="@color/grey"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/postMessage"
-        app:layout_constraintTop_toBottomOf="@+id/postMessage"
-        app:shapeAppearanceOverlay="@style/boxImageView" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/postCardLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp">
+
+            <TextView
+                android:id="@+id/postMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="hello"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toTopOf="@+id/postimg"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.139"
+                app:layout_constraintStart_toStartOf="@+id/postCardLayout"
+                app:layout_constraintTop_toTopOf="@+id/postCardLayout" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/postimg"
+                android:layout_width="250dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="25dp"
+                android:scaleType="centerCrop"
+                android:src="@color/grey"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/postMessage"
+                app:layout_constraintTop_toBottomOf="@+id/postMessage"
+                app:layout_constraintBottom_toBottomOf="@+id/postCardLayout"
+                app:shapeAppearanceOverlay="@style/boxImageView" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/LikeBtn"
         android:layout_width="28dp"
         android:layout_height="28dp"
         android:background="@drawable/outlinedlikebtn"
-        android:layout_marginTop="280dp"
         android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toTopOf="@+id/hrLine"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.195"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/time"
+        app:layout_constraintTop_toBottomOf="@+id/postCard"
         app:layout_constraintVertical_bias="1.0" />
 
     <TextView
