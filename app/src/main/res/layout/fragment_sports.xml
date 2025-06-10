@@ -16,17 +16,16 @@
         <androidx.appcompat.widget.SearchView
             android:id="@+id/search"
             style="@style/CustomSearchViewStyle"
-            android:layout_width="294dp"
+            android:layout_width="300dp"
             android:layout_height="49dp"
             android:layout_marginStart="50dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="50dp"
-            android:background="@drawable/searchbox"
+            android:layout_marginTop="24dp"
+            android:background="@android:color/transparent"
             android:focusable="false"
             app:closeIcon="@drawable/baseline_clear_24"
             app:iconifiedByDefault="false"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.47"
+            app:layout_constraintHorizontal_bias="0.119"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/sports_Constraintlayout"
             app:queryHint="Search"
@@ -73,7 +72,7 @@
             android:id="@+id/footballText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="70dp"
+            android:layout_marginStart="100dp"
             android:layout_marginTop="16dp"
             android:text="Football"
             android:textColor="?attr/TextColor"
@@ -109,7 +108,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="70dp"
+            android:layout_marginEnd="92dp"
             android:text="Basketball"
             android:textColor="?attr/TextColor"
             android:textStyle="bold"
@@ -137,19 +136,18 @@
 
         </RelativeLayout>
 
+
         <TextView
             android:id="@+id/tabletenisText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="65dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="0dp"
+            android:layout_marginStart="84dp"
+            android:layout_marginTop="12dp"
             android:text="Table Tenis"
-            android:textStyle="bold"
             android:textColor="?attr/TextColor"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/TableTenisLayout" />
-
 
         <RelativeLayout
             android:id="@+id/volleyballLayout"
@@ -178,12 +176,11 @@
             android:id="@+id/volleyballText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="70dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="92dp"
             android:text="Volley Ball"
-            android:textStyle="bold"
             android:textColor="?attr/TextColor"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/volleyballLayout" />
 
@@ -212,13 +209,11 @@
             android:id="@+id/SwimmingText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="65dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="0dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginStart="84dp"
+            android:layout_marginTop="12dp"
             android:text="Swimming"
-            android:textStyle="bold"
             android:textColor="?attr/TextColor"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/SwimmingLayout" />
 
@@ -245,20 +240,18 @@
 
         </RelativeLayout>
 
+
         <TextView
             android:id="@+id/BatmintonText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="70dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="92dp"
             android:text="Batminton"
-            android:textStyle="bold"
             android:textColor="?attr/TextColor"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/BatmintonLayout" />
-
 
         <FrameLayout
             android:id="@+id/loadingLayout"

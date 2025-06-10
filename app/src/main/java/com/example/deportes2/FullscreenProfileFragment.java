@@ -272,7 +272,10 @@ public class FullscreenProfileFragment extends Fragment {
                         editor.putString("profile_url", profileUrl);
                         editor.apply();
 
-
+                        //  Real-time drawer update
+                        if (requireActivity() instanceof MainActivity) {
+                            ((MainActivity) requireActivity()).updateDrawerProfile(name, profileUrl);
+                        }
                     });
                 }else{
                     String errorBody = response.body() != null ? response.body().string() : "No response body";
