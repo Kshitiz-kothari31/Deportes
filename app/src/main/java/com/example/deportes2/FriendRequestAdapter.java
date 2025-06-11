@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,13 +24,13 @@ public class FriendRequestAdapter extends RecyclerView.Adapter<FriendRequestAdap
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvFrom;
-        Button btnAccept, btnReject;
+        ImageView btnAccept, btnReject;
 
         public ViewHolder(View itemView) {
             super(itemView);
             tvFrom = itemView.findViewById(R.id.tvFromUserId);
-            btnAccept = itemView.findViewById(R.id.btnAccept);
-            btnReject = itemView.findViewById(R.id.btnReject);
+            btnAccept = itemView.findViewById(R.id.BtnAccept);
+            btnReject = itemView.findViewById(R.id.BtnReject);
         }
     }
 

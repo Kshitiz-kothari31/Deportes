@@ -11,7 +11,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.TextView;
 
@@ -90,6 +92,11 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+//        SearchView searchView = findViewById(R.id.searchbo);
+//        EditText searchEditText = searchView.findViewById(androidx.appcompat.R.id.search_src_text);
+//        searchEditText.setPadding(0, 0, 0, 0);
+//        searchEditText.setBackground(null);
+//drawer photo and username
         getSupportFragmentManager().setFragmentResultListener("profileUpdated", this, (key, bundle) -> {
             prefs = getSharedPreferences("AuthPrefs", Context.MODE_PRIVATE);
             userId = prefs.getString("user_id", null);
@@ -163,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
             }else if (id == R.id.nav_about_us) {
                 startActivity(new Intent(MainActivity.this, AboutActivity.class));
             } else if (id == R.id.nav_logout) {
-                logoutUser();  // 👈 Your custom method
+                logoutUser();
             }
 
             drawerLayout.closeDrawer(GravityCompat.START);
@@ -273,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
         updateDrawerProfile(savedName, savedProfileUrl);
     }
 
-    private void updateDrawerProfile(String name, String photoUrl) {
+    public void updateDrawerProfile(String name, String photoUrl) {
         NavigationView navigationView = findViewById(R.id.navigation_view);
         View headerView = navigationView.getHeaderView(0);
         drawerName = headerView.findViewById(R.id.username);
@@ -284,7 +291,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (photoUrl != null && !photoUrl.equals("error") && !photoUrl.isEmpty()) {
-            Glide.with(this).load(photoUrl).placeholder(R.drawable.user_avatar).into(drawerPhoto);
+            Glide.with(this)
+                    .load(photoUrl)
+                    .placeholder(R.drawable.user_avatar)
+                    .into(drawerPhoto);
         }
     }
 

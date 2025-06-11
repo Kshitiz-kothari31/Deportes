@@ -1,32 +1,83 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/item_friend_request"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/item_friend_request"
-    android:padding="16dp"
-    android:orientation="vertical">
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
 
-    <TextView
-        android:id="@+id/tvFromUserId"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="From: user_id" />
-
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="80dp"
+        android:padding="10dp">
 
-        <Button
-            android:id="@+id/btnAccept"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Accept" />
+        <!-- Profile image -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/friend_profile_img"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_profile"
+            app:shapeAppearanceOverlay="@drawable/profile_circle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
-        <Button
-            android:id="@+id/btnReject"
-            android:layout_width="wrap_content"
+        <!-- Friend request text -->
+        <TextView
+            android:id="@+id/tvFromUserId"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Reject"
-            android:layout_marginStart="16dp" />
-    </LinearLayout>
-</LinearLayout>
+            android:text="From: user_id"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/friend_profile_img"
+            app:layout_constraintTop_toTopOf="@id/friend_profile_img"
+            app:layout_constraintBottom_toBottomOf="@id/friend_profile_img"
+            app:layout_constraintEnd_toStartOf="@id/BtnAccept"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"/>
+        <!-- Friend username -->
+        <TextView
+            android:id="@+id/friend_username"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@username"
+            android:textSize="14sp"
+            android:textColor="#888888"
+            app:layout_constraintTop_toBottomOf="@id/tvFromUserId"
+            app:layout_constraintStart_toStartOf="@id/tvFromUserId"
+            app:layout_constraintEnd_toEndOf="@id/tvFromUserId" />
+
+
+        <!-- Accept icon (tick) -->
+        <ImageView
+            android:id="@+id/BtnAccept"
+            android:background="@android:color/transparent"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:contentDescription="Accept"
+            android:src="@drawable/ic_accept"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/BtnReject"
+            android:layout_marginEnd="12dp" />
+
+        <!-- Reject icon (cross) -->
+        <ImageView
+            android:id="@+id/BtnReject"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:contentDescription="Reject"
+            android:src="@drawable/ic_cross"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>
+
+
