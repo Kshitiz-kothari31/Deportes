@@ -3,6 +3,7 @@ package com.example.deportes2;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -10,7 +11,10 @@ import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.SearchView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
@@ -48,6 +52,7 @@ public class Sports extends Fragment {
             getActivity().startActivityForResult(intent, 100);
         });
         ShapeableImageView football, basketball, tabletenis, volleyball, swimming, batminton;
+        SearchView searchinput;
 
         football = getView().findViewById(R.id.footballimage);
         basketball = getView().findViewById(R.id.basketballimage);
@@ -55,6 +60,13 @@ public class Sports extends Fragment {
         volleyball = getView().findViewById(R.id.volleyballimage);
         swimming = getView().findViewById(R.id.swimmingimage);
         batminton = getView().findViewById(R.id.batmintonimage);
+
+        searchinput = getView().findViewById(R.id.search);
+        EditText searchEditText = searchinput.findViewById(androidx.appcompat.R.id.search_src_text);
+        searchEditText.setBackground(null);
+        searchEditText.setBackgroundColor(Color.TRANSPARENT);
+        searchEditText.setPadding(0, 0, 0, 0);
+        searchEditText.setHintTextColor(Color.GRAY);
 
         loadingLayout = view.findViewById(R.id.loadingLayout);
         sportsFragment = view.findViewById(R.id.sports_Constraintlayout);

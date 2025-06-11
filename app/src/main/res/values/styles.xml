@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="CustomSearchViewStyle" parent="Widget.AppCompat.SearchView">
-        <item name="background">@drawable/searchbox</item>
-
         <item name="android:textSize">5sp</item>
         <item name="cornerSize">50dp</item>
     </style>
