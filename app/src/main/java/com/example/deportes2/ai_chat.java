@@ -1,6 +1,7 @@
 package com.example.deportes2;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -54,6 +55,14 @@ public class ai_chat extends AppCompatActivity {
         rootView = getWindow().getDecorView().getRootView();
 
         setupKeyboardListener(rootView, prompt, welcometext);
+
+
+        // ✅ Get username from SharedPreferences
+        SharedPreferences prefs = getSharedPreferences("AuthPrefs", MODE_PRIVATE);
+        String userName = prefs.getString("name", "User"); // fallback to "User" if null
+
+        // ✅ Set the welcome text dynamically
+        welcometext.setText("Hello, " + userName);
 
         sendPrompt.setOnClickListener(new View.OnClickListener() {
             @Override
