@@ -5,6 +5,9 @@ public class FriendRequest {
     private String sender_id;
     private String receiver_id;
     private String status;
+    private String username;
+    private String profileImageUrl;
+
 
     public FriendRequest(String id, String sender_id, String receiver_id, String status) {
         this.id = id;
@@ -29,6 +32,14 @@ public class FriendRequest {
     public String getStatus() {
         return status;
     }
+    public String getUsername() {
+        return username;
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
 
     // Optional: Add setters if you need to modify the object
 }
