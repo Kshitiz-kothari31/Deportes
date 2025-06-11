@@ -3,6 +3,7 @@ package com.example.deportes2;
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -34,6 +35,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.Response;
 
 public class SearchUserProfileLayoutActivity extends AppCompatActivity {
@@ -89,24 +91,7 @@ public class SearchUserProfileLayoutActivity extends AppCompatActivity {
                 Toast.makeText(this, "You must be logged in to send friend requests", Toast.LENGTH_SHORT).show();
                 return;
             }
-            SupabaseManager.checkFriendRequestExists(currentUserId, searchUserId, accessToken, new SupabaseManager.FriendRequestExistCallback() {
-                @Override
-                public void onResult(boolean exists, String error) {
-                    runOnUiThread(() -> {
-                        addFriendBtn.setEnabled(true);
-                        if (error != null) {
-                            Toast.makeText(SearchUserProfileLayoutActivity.this, "Error checking request: " + error, Toast.LENGTH_SHORT).show();
-                        } else if (exists) {
-                            Toast.makeText(SearchUserProfileLayoutActivity.this, "Friend request already exists!", Toast.LENGTH_SHORT).show();
-                            addFriendBtn.setVisibility(View.GONE);
-                            requestSentBtn.setVisibility(View.VISIBLE);
-                            unfriendBtn.setVisibility(View.GONE);
-                        } else {
-                            sendFriendRequest(searchUserId);
-                        }
-                    });
-                }
-            });
+            sendFriendRequest(searchUserId);
         });
 
         unfriendBtn.setOnClickListener(new View.OnClickListener() {
@@ -259,7 +244,7 @@ public class SearchUserProfileLayoutActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         // Even if delete fails, try to send new request anyway
-                        sendNewRequest(currentUserId, friendUserId, accessToken);
+                        Log.e("Debug", "Failed to delete rejected request: " + e.getMessage());
                     }
 
                     @Override
@@ -309,7 +294,6 @@ public class SearchUserProfileLayoutActivity extends AppCompatActivity {
         });
     }
 
-
     private void unfriendUser() {
         SharedPreferences prefs = getSharedPreferences("AuthPrefs", MODE_PRIVATE);
         String currentUserId = prefs.getString("user_id", null);
@@ -323,6 +307,7 @@ public class SearchUserProfileLayoutActivity extends AppCompatActivity {
         SupabaseManager.checkAndRefreshToken(this, new SupabaseManager.TokenCheckCallback() {
             @Override
             public void onTokenReady(String newAccessToken) {
+                // Step 1: Delete friendship rows
                 SupabaseManager.unfriendUser(currentUserId, searchUserId, newAccessToken, new okhttp3.Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
@@ -332,12 +317,25 @@ public class SearchUserProfileLayoutActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         if (response.isSuccessful()) {
-                            runOnUiThread(() -> {
-                                Toast.makeText(SearchUserProfileLayoutActivity.this, "Unfriended successfully", Toast.LENGTH_SHORT).show();
-                                // Update UI buttons visibility accordingly
-                                unfriendBtn.setVisibility(View.GONE);
-                                addFriendBtn.setVisibility(View.VISIBLE);
-                                requestSentBtn.setVisibility(View.GONE);
+                            SupabaseManager.updateFriendRequestStatusBetweenUsers(currentUserId, searchUserId, "rejected", newAccessToken, new okhttp3.Callback() {
+                                @Override
+                                public void onFailure(Call call, IOException e) {
+                                    runOnUiThread(() -> Toast.makeText(SearchUserProfileLayoutActivity.this, "Failed to update friend request status", Toast.LENGTH_SHORT).show());
+                                }
+
+                                @Override
+                                public void onResponse(Call call, Response response) throws IOException {
+                                    runOnUiThread(() -> {
+                                        if (response.isSuccessful()) {
+                                            Toast.makeText(SearchUserProfileLayoutActivity.this, "Unfriended successfully", Toast.LENGTH_SHORT).show();
+                                            unfriendBtn.setVisibility(View.GONE);
+                                            addFriendBtn.setVisibility(View.VISIBLE);
+                                            requestSentBtn.setVisibility(View.GONE);
+                                        } else {
+                                            Toast.makeText(SearchUserProfileLayoutActivity.this, "Failed to update friend request status: " + response.code(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
                             });
                         } else {
                             runOnUiThread(() -> Toast.makeText(SearchUserProfileLayoutActivity.this, "Failed to unfriend: " + response.code(), Toast.LENGTH_SHORT).show());

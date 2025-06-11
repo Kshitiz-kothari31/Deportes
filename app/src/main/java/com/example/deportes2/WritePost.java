@@ -13,6 +13,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,6 +47,7 @@ public class WritePost extends AppCompatActivity {
 
     Toolbar post_toolbar;
     View rootView;
+    ImageButton backBtn;
 
     private AppCompatButton postBtn;
     private EditText postMessage;
@@ -68,6 +70,14 @@ public class WritePost extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+
+        backBtn = findViewById(R.id.backbtn);
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
         });
 
         rootView = getWindow().getDecorView().getRootView();
