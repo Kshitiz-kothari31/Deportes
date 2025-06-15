@@ -484,8 +484,8 @@ public class SupabaseManager {
         client.newCall(request).enqueue(callback);
     }
 
-    public static void fetchUserProfile(String userId, String accessToken, UserProfileCallback callback) {
-        String url = SUPABASE_URL + "/rest/v1/profiles?id=eq." + userId + "&select=id,name,profileImageUrl";
+    public static void getProfile(String userId, String accessToken, UserProfileCallback callback) {
+        String url = SUPABASE_URL + "/rest/v1/profiles?id=eq." + userId + "&select=id,name,profile_img";
 
         OkHttpClient client = new OkHttpClient();
 
@@ -517,7 +517,7 @@ public class SupabaseManager {
                         JSONObject obj = jsonArray.getJSONObject(0);
                         String id = obj.getString("id");
                         String name = obj.getString("name");
-                        String imageUrl = obj.optString("profileImageUrl", "");
+                        String imageUrl = obj.optString("profile_img", "error");
 
                         UserProfile profile = new UserProfile(id, name, imageUrl);
                         callback.onProfileFetched(profile);

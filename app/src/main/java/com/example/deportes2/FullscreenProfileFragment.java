@@ -117,7 +117,7 @@ public class FullscreenProfileFragment extends Fragment {
                 });
 
         if (userId != null && accessToken != null) {
-            getProfile(userId, accessToken, new Callback() {
+            SupabaseManager.getProfile(userId, accessToken, new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     e.printStackTrace();

@@ -1,11 +1,13 @@
 package com.example.deportes2;
 
+import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +30,8 @@ public class Notification_Activity extends AppCompatActivity {
     private String currentUserId;
     private String senderId;
 
+    ImageButton notification_back;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +42,11 @@ public class Notification_Activity extends AppCompatActivity {
 
         adapter = new FriendRequestAdapter(friendRequests, this::handleAction);
         recyclerView.setAdapter(adapter);
+
+        notification_back = findViewById(R.id.notificationBack);
+        notification_back.setOnClickListener(v -> {
+            onBackPressed();
+        });
 
         SharedPreferences prefs = getSharedPreferences("AuthPrefs", MODE_PRIVATE);
         currentUserId = prefs.getString("user_id", null);

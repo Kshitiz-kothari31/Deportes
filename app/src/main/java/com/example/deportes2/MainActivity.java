@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,6 +36,7 @@ import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONArray;
@@ -60,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
     public  Fragment swimmingVideosFragment=new swimming_videos();
 
     Fragment profileFragment = new FullscreenProfileFragment();
-//    Fragment chatFragment = new
     Fragment homeFragment = new HomeCommunity();
     Fragment sportsFragment = new Sports();
     Fragment activeFragment;
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     TextView drawerName;
-    ImageView drawerPhoto, searchbtn, notificationIcon, chat_icon;
+    ImageView  searchbtn, notificationIcon, chat_icon, drawerPhoto;
 
     private String userId;
     private String accessToken;
@@ -92,11 +93,6 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-//        SearchView searchView = findViewById(R.id.searchbo);
-//        EditText searchEditText = searchView.findViewById(androidx.appcompat.R.id.search_src_text);
-//        searchEditText.setPadding(0, 0, 0, 0);
-//        searchEditText.setBackground(null);
-//drawer photo and username
         getSupportFragmentManager().setFragmentResultListener("profileUpdated", this, (key, bundle) -> {
             prefs = getSharedPreferences("AuthPrefs", Context.MODE_PRIVATE);
             userId = prefs.getString("user_id", null);
@@ -119,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                                     JSONObject profile = jsonArray.getJSONObject(0);
                                     String name = profile.optString("name", "");
                                     String profileImageUrl = profile.optString("profile_img", "error");
-
+                                    Log.e("ProfileImgURL", profileImageUrl);
                                     runOnUiThread(() -> updateDrawerProfile(name, profileImageUrl));
                                 }
                             } catch (Exception e) {
@@ -276,7 +272,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         SharedPreferences prefs = getSharedPreferences("AuthPrefs", MODE_PRIVATE);
         String savedName = prefs.getString("name", null);
-        String savedProfileUrl = prefs.getString("profile_url", null);
+        String savedProfileUrl = prefs.getString("profile_url", "error");
         updateDrawerProfile(savedName, savedProfileUrl);
     }
 
@@ -290,13 +286,19 @@ public class MainActivity extends AppCompatActivity {
             drawerName.setText("Hi, " + name + "!");
         }
 
-        if (photoUrl != null && !photoUrl.equals("error") && !photoUrl.isEmpty()) {
+        Log.e("DrawerProfile", "photoUrl: " + photoUrl);
+
+        if (photoUrl != null && !photoUrl.trim().isEmpty()) {
             Glide.with(this)
                     .load(photoUrl)
                     .placeholder(R.drawable.user_avatar)
+                    .error(R.drawable.user_avatar)
                     .into(drawerPhoto);
+        } else {
+            Toast.makeText(this, "Error loading profile image", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
